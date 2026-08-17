@@ -18,6 +18,7 @@ import com.educalab.filosofar.data.local.seed.SeedPerspectives
 import com.educalab.filosofar.data.local.seed.SeedQuestions
 import com.educalab.filosofar.data.local.seed.SeedReasonCards
 import com.educalab.filosofar.data.local.seed.SeedSelfDebates
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -83,7 +84,7 @@ class AppDatabaseRoomTest {
         db.dailyQuestionDao().insertAttempt(
             QuestionAttemptEntity(questionId = question.id, answerText = "Mi respuesta de prueba", wordCount = 3, answeredAtEpochMs = 1000L)
         )
-        val attempts = kotlinx.coroutines.flow.first(db.dailyQuestionDao().observeAttemptsFor(question.id))
+        val attempts = db.dailyQuestionDao().observeAttemptsFor(question.id).first()
         assertEquals(1, attempts.size)
         assertEquals("Mi respuesta de prueba", attempts.first().answerText)
     }
@@ -92,12 +93,12 @@ class AppDatabaseRoomTest {
     fun `deleting an island cascades to delete its daily questions`() = runBlocking {
         DatabaseSeeder(db).seedIfNeeded()
         val islandId = SeedIslands.VERDAD
-        val before = kotlinx.coroutines.flow.first(db.dailyQuestionDao().observeByIsland(islandId))
+        val before = db.dailyQuestionDao().observeByIsland(islandId).first()
         assertTrue(before.isNotEmpty())
 
         db.openHelper.writableDatabase.execSQL("DELETE FROM philosophy_island WHERE id = ?", arrayOf(islandId))
 
-        val after = kotlinx.coroutines.flow.first(db.dailyQuestionDao().observeByIsland(islandId))
+        val after = db.dailyQuestionDao().observeByIsland(islandId).first()
         assertTrue(after.isEmpty())
     }
 
@@ -145,11 +146,11 @@ class AppDatabaseRoomTest {
         val id = db.reflectionDao().insertReflection(
             ReflectionEntity(relatedIslandId = null, title = "Idea de prueba", bodyText = "Cuerpo", createdAtEpochMs = 100L)
         )
-        var all = kotlinx.coroutines.flow.first(db.reflectionDao().observeAll())
+        var all = db.reflectionDao().observeAll().first()
         assertEquals(1, all.size)
 
         db.reflectionDao().deleteReflection(id)
-        all = kotlinx.coroutines.flow.first(db.reflectionDao().observeAll())
+        all = db.reflectionDao().observeAll().first()
         assertTrue(all.isEmpty())
     }
 

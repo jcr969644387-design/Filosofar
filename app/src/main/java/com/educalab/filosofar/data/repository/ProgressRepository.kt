@@ -21,6 +21,7 @@ import com.educalab.filosofar.domain.model.ModuleStatus
 import com.educalab.filosofar.domain.model.ProfileStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
@@ -175,36 +176,36 @@ class ProgressRepository(
     // --- Helpers de snapshot (una lectura puntual, no reactiva) ---
     private suspend fun islandDaoSnapshot() = islandDao.observeAll().let { flow ->
         var result: List<com.educalab.filosofar.data.local.entity.PhilosophyIslandEntity> = emptyList()
-        kotlinx.coroutines.flow.first(flow).let { result = it }
+        flow.first().let { result = it }
         result
     }
 
-    private suspend fun allBadgesSnapshot() = kotlinx.coroutines.flow.first(badgeDao.observeAll())
+    private suspend fun allBadgesSnapshot() = badgeDao.observeAll().first()
 
     private suspend fun countQuestionsTotal(islandId: String) =
-        kotlinx.coroutines.flow.first(questionDao.observeByIsland(islandId)).size
+        questionDao.observeByIsland(islandId).first().size
 
     private suspend fun countDilemmasTotal(islandId: String) =
-        kotlinx.coroutines.flow.first(dilemmaDao.observeByIsland(islandId)).size
+        dilemmaDao.observeByIsland(islandId).first().size
 
     private suspend fun countLogicTotal(islandId: String) =
-        kotlinx.coroutines.flow.first(logicDao.observeByIsland(islandId)).size
+        logicDao.observeByIsland(islandId).first().size
 
     private suspend fun countPerspectivesTotal(islandId: String) =
-        kotlinx.coroutines.flow.first(perspectiveDao.observeByIsland(islandId)).size
+        perspectiveDao.observeByIsland(islandId).first().size
 
     private suspend fun countAllQuestionAttempts() =
-        kotlinx.coroutines.flow.first(questionDao.observeAllAttempts()).map { it.questionId }.distinct().size
+        questionDao.observeAllAttempts().first().map { it.questionId }.distinct().size
 
     private suspend fun countAllDilemmaAttempts() =
-        kotlinx.coroutines.flow.first(dilemmaDao.observeAllAttempts()).map { it.dilemmaId }.distinct().size
+        dilemmaDao.observeAllAttempts().first().map { it.dilemmaId }.distinct().size
 
     private suspend fun countAllLogicSolved() =
-        kotlinx.coroutines.flow.first(logicDao.observeAllAttempts()).count { it.wasCorrect }
+        logicDao.observeAllAttempts().first().count { it.wasCorrect }
 
     private suspend fun countAllDebateAttempts() =
-        kotlinx.coroutines.flow.first(debateDao.observeAllAttempts()).map { it.debateId }.distinct().size
+        debateDao.observeAllAttempts().first().map { it.debateId }.distinct().size
 
     private suspend fun countAllJournalEntries() =
-        kotlinx.coroutines.flow.first(reflectionDao.observeAll()).size
+        reflectionDao.observeAll().first().size
 }

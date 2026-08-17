@@ -7,6 +7,7 @@ import com.educalab.filosofar.domain.model.DailyQuestion
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class DailyQuestionUiState(
@@ -28,7 +29,7 @@ class DailyQuestionViewModel(
     init {
         viewModelScope.launch {
             val question = repository.observeByIsland(islandId).let { flow ->
-                kotlinx.coroutines.flow.first(flow)
+                flow.first()
             }.let { list ->
                 // Prioriza una sin responder dentro de la isla; si todas tienen intento, cualquiera.
                 list.firstOrNull { repository.lastAnswerFor(it.id) == null } ?: list.randomOrNull()
