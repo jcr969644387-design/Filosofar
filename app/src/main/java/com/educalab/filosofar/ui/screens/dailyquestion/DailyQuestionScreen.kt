@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.educalab.filosofar.ui.components.LocalSoundHaptics
 import com.educalab.filosofar.ui.components.LumiCharacter
 import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CrystalCyan
@@ -48,6 +49,7 @@ import com.educalab.filosofar.ui.theme.TextOnLight
 @Composable
 fun DailyQuestionScreen(viewModel: DailyQuestionViewModel, onBack: () -> Unit) {
     val state by viewModel.uiState.collectAsState()
+    val soundHaptics = LocalSoundHaptics.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
@@ -141,7 +143,7 @@ fun DailyQuestionScreen(viewModel: DailyQuestionViewModel, onBack: () -> Unit) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = viewModel::submit,
+                            onClick = { soundHaptics?.success(); viewModel.submit() },
                             enabled = state.answerText.isNotBlank(),
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = CrystalCyan)

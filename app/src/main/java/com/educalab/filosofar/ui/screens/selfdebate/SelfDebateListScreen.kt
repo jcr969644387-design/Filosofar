@@ -45,6 +45,20 @@ fun SelfDebateListScreen(viewModel: SelfDebateListViewModel, onBack: () -> Unit,
                 Text("Debate conmigo mismo", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
             }
             LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (state.unlockedCount == 0 && state.debates.isNotEmpty()) {
+                    item {
+                        Text(
+                            "🔒 Responde la Pregunta del día de esta isla para desbloquear el debate.",
+                            color = TextOnDarkMuted,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(SurfaceCard.copy(alpha = 0.10f))
+                                .padding(14.dp)
+                        )
+                    }
+                }
                 itemsIndexed(state.debates) { index, d ->
                     val unlocked = index < state.unlockedCount
                     val completed = d.id in state.completedIds

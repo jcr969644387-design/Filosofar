@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.model.DebateArgument
+import com.educalab.filosofar.ui.components.LocalSoundHaptics
 import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CoralAccent
 import com.educalab.filosofar.ui.theme.CrystalCyan
@@ -64,6 +65,7 @@ import kotlin.math.roundToInt
 fun SelfDebateDetailScreen(viewModel: SelfDebateDetailViewModel, onBack: () -> Unit) {
     val state by viewModel.uiState.collectAsState()
     val debate = state.debate ?: return
+    val soundHaptics = LocalSoundHaptics.current
 
     var zoneARect by remember { mutableStateOf<Rect?>(null) }
     var zoneBRect by remember { mutableStateOf<Rect?>(null) }
@@ -148,7 +150,7 @@ fun SelfDebateDetailScreen(viewModel: SelfDebateDetailViewModel, onBack: () -> U
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(
-                        onClick = viewModel::confirm,
+                        onClick = { soundHaptics?.success(); viewModel.confirm() },
                         enabled = viewModel.unplacedArguments().isEmpty() && state.conclusionText.isNotBlank(),
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = CrystalCyan)

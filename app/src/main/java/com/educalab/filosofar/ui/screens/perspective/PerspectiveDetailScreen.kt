@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.educalab.filosofar.ui.components.LocalSoundHaptics
 import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CrystalCyan
 import com.educalab.filosofar.ui.theme.LumiYellow
@@ -52,6 +53,7 @@ import com.educalab.filosofar.ui.theme.TextOnLight
 fun PerspectiveDetailScreen(viewModel: PerspectiveDetailViewModel, onBack: () -> Unit) {
     val state by viewModel.uiState.collectAsState()
     val exercise = state.exercise ?: return
+    val soundHaptics = LocalSoundHaptics.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
@@ -130,7 +132,7 @@ fun PerspectiveDetailScreen(viewModel: PerspectiveDetailViewModel, onBack: () ->
                             )
                             Spacer(modifier = Modifier.height(14.dp))
                             Button(
-                                onClick = { if (!state.confirmed) viewModel.confirm() else onBack() },
+                                onClick = { if (!state.confirmed) { soundHaptics?.success(); viewModel.confirm() } else onBack() },
                                 enabled = state.confirmed || state.reflectionAnswer.isNotBlank(),
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = CrystalCyan, disabledContainerColor = CrystalCyan.copy(alpha = 0.4f))

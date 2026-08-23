@@ -1,5 +1,6 @@
 package com.educalab.filosofar.ui.navigation
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -8,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.educalab.filosofar.ui.components.LocalSoundHaptics
+import com.educalab.filosofar.ui.components.rememberSoundHaptics
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -71,6 +74,12 @@ fun FilosofarNavHost(container: AppContainer) {
 
     val startDestination = if (profileState.value?.onboardingCompleted == true) Routes.MAP else Routes.ONBOARDING
 
+    val soundHaptics = rememberSoundHaptics(
+        soundEnabled = profileState.value?.soundEnabled ?: true,
+        hapticsEnabled = profileState.value?.hapticsEnabled ?: true
+    )
+
+    CompositionLocalProvider(LocalSoundHaptics provides soundHaptics) {
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable(Routes.ONBOARDING) {
@@ -135,7 +144,7 @@ fun FilosofarNavHost(container: AppContainer) {
 
         composable(Routes.REASON_CARDS, arguments = listOf(navArgument("dilemmaId") { type = NavType.StringType })) {
             val vm: ReasonCardsViewModel = viewModel(factory = ViewModelFactory(container) { ReasonCardsViewModel(it.reasonCardRepository) })
-            ReasonCardsScreen(vm) { navController.popBackStack(Routes.MAP, inclusive = false) }
+            ReasonCardsScreen(vm) { navController.popBackStack(Routes.DILEMMA_LIST, inclusive = false) }
         }
 
         composable(Routes.PERSPECTIVE_LIST, arguments = listOf(navArgument("islandId") { type = NavType.StringType })) { entry ->
@@ -189,5 +198,6 @@ fun FilosofarNavHost(container: AppContainer) {
             val vm: ProgressViewModel = viewModel(factory = ViewModelFactory(container) { ProgressViewModel(it.progressRepository) })
             ProgressScreen(vm) { navController.popBackStack() }
         }
+    }
     }
 }

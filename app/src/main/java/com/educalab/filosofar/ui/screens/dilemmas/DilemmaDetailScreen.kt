@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.model.DilemmaOption
+import com.educalab.filosofar.ui.components.LocalSoundHaptics
 import com.educalab.filosofar.ui.components.LumiCharacter
 import com.educalab.filosofar.ui.components.NoxCharacter
 import com.educalab.filosofar.ui.components.OceanSkyBackground
@@ -55,6 +56,7 @@ import com.educalab.filosofar.ui.theme.TextOnLight
 fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, onGoToReasonCards: () -> Unit) {
     val state by viewModel.uiState.collectAsState()
     val dilemma = state.dilemma ?: return
+    val soundHaptics = LocalSoundHaptics.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
@@ -126,7 +128,7 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
                                         Spacer(modifier = Modifier.height(16.dp))
                                         if (!state.confirmed) {
                                             Button(
-                                                onClick = viewModel::confirm,
+                                                onClick = { soundHaptics?.success(); viewModel.confirm() },
                                                 modifier = Modifier.fillMaxWidth().height(50.dp),
                                                 colors = ButtonDefaults.buttonColors(containerColor = CrystalCyan)
                                             ) {

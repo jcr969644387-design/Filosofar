@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.logic.LogicCheckResult
 import com.educalab.filosofar.domain.model.LogicChallengeType
 import com.educalab.filosofar.domain.model.LogicItem
+import com.educalab.filosofar.ui.components.LocalSoundHaptics
 import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CoralAccent
 import com.educalab.filosofar.ui.theme.CrystalCyan
@@ -64,6 +66,22 @@ private val MatchPairColors = listOf(CrystalCyan, LumiYellow, CoralAccent, Islan
 fun LogicChallengeScreen(viewModel: LogicChallengeViewModel, onBack: () -> Unit) {
     val state by viewModel.uiState.collectAsState()
     val challenge = state.challenge ?: return
+    val soundHaptics = LocalSoundHaptics.current
+
+    LaunchedEffect(state.checked) {
+        if (state.checked && !state.alreadySolved) {
+            val isCorrect = when (val r = state.result) {
+                is LogicCheckResult.Sequence -> r.correct
+                is LogicCheckResult.Match -> r.allCorrect
+                is LogicCheckResult.SpotFlaw -> r.correct
+                null -> false
+            }
+            if (isCorrect) soundHaptics?.success() else soundHaptics?.error()
+        }
+    }
+    LaunchedEffect(state.lastConnectionWrong) {
+        if (state.lastConnectionWrong) soundHaptics?.error()
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())

@@ -45,6 +45,20 @@ fun PerspectiveListScreen(viewModel: PerspectiveListViewModel, onBack: () -> Uni
                 Text("Otro punto de vista", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
             }
             LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (state.unlockedCount == 0 && state.exercises.isNotEmpty()) {
+                    item {
+                        Text(
+                            "🔒 Responde la Pregunta del día de esta isla para desbloquear estos ejercicios.",
+                            color = TextOnDarkMuted,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(SurfaceCard.copy(alpha = 0.10f))
+                                .padding(14.dp)
+                        )
+                    }
+                }
                 itemsIndexed(state.exercises) { index, ex ->
                     val unlocked = index < state.unlockedCount
                     val completed = ex.id in state.completedIds
