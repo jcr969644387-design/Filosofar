@@ -5,15 +5,29 @@ import androidx.lifecycle.viewModelScope
 import com.educalab.filosofar.data.repository.DilemmaRepository
 import com.educalab.filosofar.domain.model.Dilemma
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class DilemmaListViewModel(islandId: String, repository: DilemmaRepository) : ViewModel() {
-    val dilemmas: StateFlow<List<Dilemma>> = repository.observeByIsland(islandId)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+data class DilemmaListUiState(
+    val dilemmas: List<Dilemma> = emptyList(),
+    val unlockedCount: Int = 0,
+    val completedIds: Set<String> = emptySet()
+)
+
+class DilemmaListViewModel(islandId: String, private val repository: DilemmaRepository) : ViewModel() {
+    private val _uiState = MutableStateFlow(DilemmaListUiState())
+    val uiState: StateFlow<DilemmaListUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val unlockState = repository.getIslandUnlockState(islandId)
+            _uiState.value = _uiState.value.copy(dilemmas = unlockState.dilemmas, unlockedCount = unlockState.unlockedCount)
+            repository.observeCompletedIds(islandId).collect { completed ->
+                _uiState.value = _uiState.value.copy(completedIds = completed)
+            }
+        }
+    }
 }
 
 data class DilemmaDetailUiState(

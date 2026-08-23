@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +61,7 @@ fun PerspectiveDetailScreen(viewModel: PerspectiveDetailViewModel, onBack: () ->
                 Text("Otro punto de vista", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
             }
 
-            Column(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
                 if (state.confirmed) {
                     Text(
                         "✓ Completado",

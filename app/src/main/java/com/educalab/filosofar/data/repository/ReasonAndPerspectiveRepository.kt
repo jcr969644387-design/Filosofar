@@ -3,10 +3,15 @@ package com.educalab.filosofar.data.repository
 import com.educalab.filosofar.data.local.dao.PerspectiveDao
 import com.educalab.filosofar.data.local.dao.ReasonCardDao
 import com.educalab.filosofar.data.local.entity.PerspectiveAttemptEntity
+import com.educalab.filosofar.data.local.entity.PerspectiveUnlockEntity
+import com.educalab.filosofar.domain.logic.DayGating
 import com.educalab.filosofar.domain.model.PerspectiveExercise
 import com.educalab.filosofar.domain.model.ReasonCard
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+
+/** Estado de desbloqueo diario de "Otro punto de vista" para una isla. */
+data class PerspectiveUnlockState(val exercises: List<PerspectiveExercise>, val unlockedCount: Int)
 
 class ReasonCardRepository(private val dao: ReasonCardDao) {
     fun observeAll(): Flow<List<ReasonCard>> = dao.observeAll().map { list -> list.map { it.toDomain() } }
@@ -23,6 +28,23 @@ class PerspectiveRepository(
 ) {
     fun observeByIsland(islandId: String): Flow<List<PerspectiveExercise>> =
         dao.observeByIsland(islandId).map { list -> list.map { it.toDomain() } }
+
+    /** Calcula cuántos ejercicios de la isla están desbloqueados hoy (5 nuevos por día). */
+    suspend fun getIslandUnlockState(islandId: String): PerspectiveUnlockState {
+        val ordered = dao.listByIslandOnce(islandId).map { it.toDomain() }
+        if (ordered.isEmpty()) return PerspectiveUnlockState(emptyList(), 0)
+
+        val todayKey = DayGating.logicalDayKey()
+        val anchor = dao.getUnlockAnchor(islandId) ?: PerspectiveUnlockEntity(islandId, todayKey).also {
+            dao.insertUnlockAnchor(it)
+        }
+        val dayIndex = (todayKey - anchor.startDayKey).toInt().coerceAtLeast(0)
+        val unlockedCount = ((dayIndex + 1) * ITEMS_PER_DAY).coerceAtMost(ordered.size)
+        return PerspectiveUnlockState(ordered, unlockedCount)
+    }
+
+    fun observeCompletedIds(islandId: String): Flow<Set<String>> =
+        dao.observeCompletedInIsland(islandId).map { it.toSet() }
 
     suspend fun getFull(id: String): PerspectiveExercise? = dao.get(id)?.toDomain()
 
@@ -42,5 +64,9 @@ class PerspectiveRepository(
     }
 
     private fun com.educalab.filosofar.data.local.entity.PerspectiveExerciseEntity.toDomain() =
-        PerspectiveExercise(id, islandId, situation, roleAText, roleAViewpoint, roleBText, roleBViewpoint, reflectionPrompt)
+        PerspectiveExercise(id, islandId, situation, roleAText, roleAViewpoint, roleBText, roleBViewpoint, reflectionPrompt, orderInIsland)
+
+    companion object {
+        private const val ITEMS_PER_DAY = 5
+    }
 }

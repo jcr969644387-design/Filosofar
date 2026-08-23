@@ -83,3 +83,20 @@ data class DilemmaAttemptEntity(
     val viewedAlternativePerspective: Boolean,
     val attemptedAtEpochMs: Long
 )
+
+/** Ancla del desbloqueo diario de dilemas por isla: se desbloquean 5 dilemas nuevos cada día. */
+@Entity(
+    tableName = "dilemma_unlock",
+    foreignKeys = [
+        ForeignKey(
+            entity = PhilosophyIslandEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["islandId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
+data class DilemmaUnlockEntity(
+    @PrimaryKey val islandId: String,
+    val startDayKey: Long
+)

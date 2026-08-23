@@ -1,4 +1,4 @@
-﻿package com.educalab.filosofar.ui.screens.dilemmas
+package com.educalab.filosofar.ui.screens.dilemmas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,13 +29,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.model.Dilemma
 import com.educalab.filosofar.ui.components.OceanSkyBackground
+import com.educalab.filosofar.ui.theme.SuccessGreen
 import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
 
 @Composable
 fun DilemmaListScreen(viewModel: DilemmaListViewModel, onBack: () -> Unit, onOpenDilemma: (String) -> Unit) {
-    val dilemmas by viewModel.dilemmas.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
@@ -45,23 +46,56 @@ fun DilemmaListScreen(viewModel: DilemmaListViewModel, onBack: () -> Unit, onOpe
                 Text("Dilemas interactivos", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
             }
             LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(dilemmas) { d -> DilemmaCard(d) { onOpenDilemma(d.id) } }
+                itemsIndexed(state.dilemmas) { index, d ->
+                    val unlocked = index < state.unlockedCount
+                    val completed = d.id in state.completedIds
+                    val dayNumber = (index / 5) + 1
+                    DilemmaCard(
+                        dilemma = d,
+                        unlocked = unlocked,
+                        completed = completed,
+                        dayNumber = dayNumber,
+                        onClick = { if (unlocked) onOpenDilemma(d.id) }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun DilemmaCard(dilemma: Dilemma, onClick: () -> Unit) {
+private fun DilemmaCard(dilemma: Dilemma, unlocked: Boolean, completed: Boolean, dayNumber: Int, onClick: () -> Unit) {
+    val background = when {
+        completed -> SuccessGreen.copy(alpha = 0.26f)
+        unlocked -> SurfaceCard.copy(alpha = 0.15f)
+        else -> SurfaceCard.copy(alpha = 0.06f)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(SurfaceCard.copy(alpha = 0.16f))
-            .clickable(onClick = onClick)
+            .background(background)
+            .clickable(enabled = unlocked, onClick = onClick)
             .padding(16.dp)
     ) {
-        Text(dilemma.title, style = MaterialTheme.typography.titleMedium, color = TextOnDark, fontWeight = FontWeight.Bold)
-        Text(dilemma.scenario, style = MaterialTheme.typography.bodyMedium, color = TextOnDarkMuted, maxLines = 2)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                dilemma.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = if (unlocked) TextOnDark else TextOnDarkMuted,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            if (completed) {
+                Text("✓", color = SuccessGreen, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+            } else if (!unlocked) {
+                Text("🔒", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+        if (unlocked) {
+            Text(dilemma.scenario, style = MaterialTheme.typography.bodyMedium, color = TextOnDarkMuted, maxLines = 2)
+        } else {
+            Text("Se desbloquea el día $dayNumber", style = MaterialTheme.typography.bodyMedium, color = TextOnDarkMuted)
+        }
     }
 }

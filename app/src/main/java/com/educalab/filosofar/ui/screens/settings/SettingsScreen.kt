@@ -3,6 +3,8 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,7 +71,7 @@ fun SettingsScreen(viewModel: ProfileViewModel, onBack: () -> Unit) {
                 Text("Ajustes", color = TextOnDark, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
 
-            Column(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
                 profile?.let { p ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         AvatarIllustration(p.avatarId, modifier = Modifier.size(56.dp))

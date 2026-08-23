@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -92,7 +94,7 @@ fun DailyQuestionScreen(viewModel: DailyQuestionViewModel, onBack: () -> Unit) {
                 return@Column
             }
 
-            Column(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
                 if (state.totalDays > 0) {
                     Text(
                         "Pregunta ${state.dayNumber} de ${state.totalDays}",

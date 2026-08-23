@@ -1,4 +1,4 @@
-﻿package com.educalab.filosofar.ui.screens.perspective
+package com.educalab.filosofar.ui.screens.perspective
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,13 +29,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.model.PerspectiveExercise
 import com.educalab.filosofar.ui.components.OceanSkyBackground
+import com.educalab.filosofar.ui.theme.SuccessGreen
 import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
 
 @Composable
 fun PerspectiveListScreen(viewModel: PerspectiveListViewModel, onBack: () -> Unit, onOpen: (String) -> Unit) {
-    val exercises by viewModel.exercises.collectAsState()
+    val state by viewModel.uiState.collectAsState()
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
         Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
@@ -44,20 +45,56 @@ fun PerspectiveListScreen(viewModel: PerspectiveListViewModel, onBack: () -> Uni
                 Text("Otro punto de vista", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
             }
             LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(exercises) { ex ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(18.dp))
-                            .background(SurfaceCard.copy(alpha = 0.16f))
-                            .clickable { onOpen(ex.id) }
-                            .padding(16.dp)
-                    ) {
-                        Text(ex.situation, style = MaterialTheme.typography.bodyLarge, color = TextOnDark, fontWeight = FontWeight.SemiBold)
-                        Text(ex.reflectionPrompt, style = MaterialTheme.typography.bodyMedium, color = TextOnDarkMuted, modifier = Modifier.padding(top = 4.dp))
-                    }
+                itemsIndexed(state.exercises) { index, ex ->
+                    val unlocked = index < state.unlockedCount
+                    val completed = ex.id in state.completedIds
+                    val dayNumber = (index / 5) + 1
+                    PerspectiveCard(
+                        exercise = ex,
+                        unlocked = unlocked,
+                        completed = completed,
+                        dayNumber = dayNumber,
+                        onClick = { if (unlocked) onOpen(ex.id) }
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PerspectiveCard(exercise: PerspectiveExercise, unlocked: Boolean, completed: Boolean, dayNumber: Int, onClick: () -> Unit) {
+    val background = when {
+        completed -> SuccessGreen.copy(alpha = 0.26f)
+        unlocked -> SurfaceCard.copy(alpha = 0.16f)
+        else -> SurfaceCard.copy(alpha = 0.06f)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(background)
+            .clickable(enabled = unlocked, onClick = onClick)
+            .padding(16.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                exercise.situation,
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (unlocked) TextOnDark else TextOnDarkMuted,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
+            )
+            if (completed) {
+                Text("✓", color = SuccessGreen, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+            } else if (!unlocked) {
+                Text("🔒", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+        if (unlocked) {
+            Text(exercise.reflectionPrompt, style = MaterialTheme.typography.bodyMedium, color = TextOnDarkMuted, modifier = Modifier.padding(top = 4.dp))
+        } else {
+            Text("Se desbloquea el día $dayNumber", style = MaterialTheme.typography.bodyMedium, color = TextOnDarkMuted, modifier = Modifier.padding(top = 4.dp))
         }
     }
 }

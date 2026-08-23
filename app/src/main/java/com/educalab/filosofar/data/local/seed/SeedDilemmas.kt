@@ -4,7 +4,7 @@ import com.educalab.filosofar.data.local.entity.DilemmaEntity
 import com.educalab.filosofar.data.local.entity.DilemmaOptionEntity
 
 /**
- * 18 dilemas (3 por isla), cada uno con 3 opciones.
+ * 36 dilemas (6 por isla), cada uno con 3 opciones. Se desbloquean 5 por día.
  */
 object SeedDilemmas {
 
@@ -197,6 +197,186 @@ object SeedDilemmas {
                 RawOption("Lo interrumpo para decir que está equivocado", "Dices lo que piensas rápido, pero puede sentirse como un ataque.", "Lumi piensa: se puede no estar de acuerdo sin necesidad de interrumpir a nadie.", "Nox piensa: a veces las ganas de responder son tan fuertes que cuesta esperar."),
                 RawOption("Espero mi turno y explico por qué pienso diferente", "Tarda un poco más, pero el debate se mantiene respetuoso.", "Lumi piensa: escuchar y responder con calma suele construir mejores ideas para todos.", "Nox piensa: esperar el turno puede ser difícil cuando algo te parece muy injusto."),
                 RawOption("No digo nada para evitar la discusión", "Evitas el conflicto, pero tu punto de vista no se escucha.", "Lumi piensa: compartir tu opinión, con respeto, también aporta algo al grupo.", "Nox piensa: quedarte callado a veces es la forma en que decides no participar hoy, y también es una opción.")
+            )
+        ),
+        RawDilemma(
+            "dil_verdad_4", SeedIslands.VERDAD, "La respuesta parecida",
+            "En un trabajo en pareja, la respuesta de tu compañero se parece mucho a la de otro grupo, y no sabes si copiaron o llegaron a lo mismo por casualidad.",
+            3,
+            listOf(
+                RawOption("Lo acuso directamente de copiar", "Puede generar un conflicto si en realidad no copiaron.", "Lumi piensa: acusar sin pruebas puede dañar la confianza de tu compañero.", "Nox piensa: es normal sospechar cuando algo se parece demasiado."),
+                RawOption("Le pregunto primero cómo llegó a esa respuesta", "Tardas un poco, pero entiendes mejor lo que pasó antes de opinar.", "Lumi piensa: preguntar antes de juzgar ayuda a acercarte más a la verdad.", "Nox piensa: puede sentirse incómodo preguntar algo así a un amigo."),
+                RawOption("No digo nada y dejo que el profe decida", "Evitas el conflicto, pero no ayudas a aclarar la duda.", "Lumi piensa: a veces callar deja la duda sin resolver para nadie.", "Nox piensa: no siempre es tu responsabilidad investigarlo tú mismo.")
+            )
+        ),
+        RawDilemma(
+            "dil_verdad_5", SeedIslands.VERDAD, "La app que adivina el futuro",
+            "Una app promete adivinar tu futuro y varios compañeros la usan y comparten lo que 'les dijo'.",
+            4,
+            listOf(
+                RawOption("La descargo y creo lo que me diga", "Puede ser divertido, pero confundes un juego con algo real.", "Lumi piensa: divertirse con algo no significa que sea verdad.", "Nox piensa: es fácil dejarse llevar cuando todos a tu alrededor lo hacen."),
+                RawOption("La pruebo, pero recuerdo que es solo un juego", "Te diviertes sin confundir el juego con la realidad.", "Lumi piensa: disfrutar algo sabiendo que no es real es una forma sana de jugar.", "Nox piensa: a veces cuesta recordar eso cuando algo 'acierta' por casualidad."),
+                RawOption("No la uso porque no tiene forma de comprobarse", "Te pierdes la diversión del grupo, pero evitas confundirte.", "Lumi piensa: dudar de algo que no se puede comprobar es razonable.", "Nox piensa: quedarte fuera del juego también tiene su costo social.")
+            )
+        ),
+        RawDilemma(
+            "dil_verdad_6", SeedIslands.VERDAD, "El experimento que no salió como esperabas",
+            "Haces un experimento de ciencias en casa y el resultado no es el que esperabas según lo que leíste.",
+            5,
+            listOf(
+                RawOption("Cambio el resultado en mi reporte para que coincida con lo esperado", "El reporte se ve 'correcto', pero no refleja lo que realmente pasó.", "Lumi piensa: cambiar un resultado real rompe la confianza en lo que reportas.", "Nox piensa: da miedo entregar algo que parece 'un error'."),
+                RawOption("Anoto el resultado real y trato de explicar por qué fue distinto", "Tarda más pensar la explicación, pero el reporte es honesto.", "Lumi piensa: un resultado inesperado, bien explicado, también enseña algo verdadero.", "Nox piensa: puede que no encuentres una explicación clara, y eso también está bien decirlo."),
+                RawOption("No entrego el experimento porque no salió bien", "Evitas mostrar el resultado, pero pierdes la oportunidad de aprender de él.", "Lumi piensa: un experimento 'fallido' también aporta información real.", "Nox piensa: da vergüenza mostrar algo que no salió como se esperaba.")
+            )
+        ),
+        RawDilemma(
+            "dil_justicia_4", SeedIslands.JUSTICIA, "El asiento reservado",
+            "En el autobús escolar hay un asiento marcado para quien lo necesite, y dos compañeros lo piden a la vez: uno llegó primero, el otro tiene una pierna lastimada.",
+            3,
+            listOf(
+                RawOption("Se lo doy a quien llegó primero", "Es una regla simple, aunque no tenga en cuenta la lesión.", "Lumi piensa: una regla igual para todos es fácil de aplicar.", "Nox piensa: llegar primero no siempre refleja quién más lo necesita."),
+                RawOption("Se lo doy a quien tiene la pierna lastimada", "Reconoces una necesidad real, aunque el otro también quería sentarse.", "Lumi piensa: a veces ser justo es fijarte en quién lo necesita más en ese momento.", "Nox piensa: quien llegó primero también puede sentir que no se respetó su turno."),
+                RawOption("Les pregunto a ambos qué les parece más justo", "Tarda un poco, pero los dos participan en la decisión.", "Lumi piensa: decidir juntos suele sentirse más justo que decidir por ellos.", "Nox piensa: puede ser incómodo para el lastimado tener que explicar su situación en voz alta.")
+            )
+        ),
+        RawDilemma(
+            "dil_justicia_5", SeedIslands.JUSTICIA, "El proyecto grupal desigual",
+            "En un proyecto de cuatro personas, dos trabajaron mucho más que las otras dos, pero la nota es una sola para todo el grupo.",
+            4,
+            listOf(
+                RawOption("Acepto la nota grupal sin decir nada", "Evitas el conflicto, pero el esfuerzo desigual queda sin reconocerse.", "Lumi piensa: quedarse callado no resuelve la sensación de injusticia.", "Nox piensa: a veces es más fácil dejarlo pasar que abrir un conflicto."),
+                RawOption("Hablo con el profe para explicar cómo se repartió el trabajo", "Es incómodo, pero el profe puede tomarlo en cuenta para futuras notas.", "Lumi piensa: contar lo que pasó de forma honesta puede ayudar a que sea más justo la próxima vez.", "Nox piensa: puede sentirse como 'acusar' a los compañeros, aunque no sea la intención."),
+                RawOption("Hablo primero con el grupo antes de decir algo al profe", "Tarda más, pero les da a todos la oportunidad de arreglarlo entre ustedes.", "Lumi piensa: resolverlo en grupo primero respeta a todos los involucrados.", "Nox piensa: no siempre el grupo está dispuesto a reconocer el desequilibrio.")
+            )
+        ),
+        RawDilemma(
+            "dil_justicia_6", SeedIslands.JUSTICIA, "La regla nueva a mitad de juego",
+            "Estás jugando un juego de mesa con amigos y, a mitad de la partida, alguien propone cambiar una regla que te perjudica a ti.",
+            5,
+            listOf(
+                RawOption("Me niego porque la regla cambió a mitad del juego", "Defiendes lo acordado al inicio, aunque el grupo quiera cambiarlo.", "Lumi piensa: cambiar las reglas a mitad de camino puede no ser justo para quien ya jugaba con las anteriores.", "Nox piensa: negarte puede hacer que el grupo sienta que no quieres ceder nunca."),
+                RawOption("Acepto el cambio para no pelear con el grupo", "Evitas el conflicto, aunque sientas que te perjudica.", "Lumi piensa: ceder a veces ayuda a que el grupo siga disfrutando el juego.", "Nox piensa: aceptar algo que sientes injusto solo para evitar pelear no siempre se siente bien."),
+                RawOption("Propongo aplicar el cambio recién en la siguiente partida", "Se tarda en decidir, pero respeta lo acordado y a la vez escucha la propuesta.", "Lumi piensa: buscar un punto medio puede ser más justo que aceptar o negarse del todo.", "Nox piensa: no siempre el grupo quiere esperar hasta la próxima partida.")
+            )
+        ),
+        RawDilemma(
+            "dil_amistad_4", SeedIslands.AMISTAD, "El chiste que no le gustó",
+            "Le haces una broma a un amigo frente a otros y, aunque tú la creías graciosa, a él claramente no le gustó.",
+            3,
+            listOf(
+                RawOption("Sigo bromeando porque los demás se ríen", "El grupo se divierte, pero tu amigo se siente peor.", "Lumi piensa: que otros se rían no borra que a tu amigo le esté doliendo.", "Nox piensa: a veces cuesta parar cuando el grupo está reaccionando bien."),
+                RawOption("Paro enseguida y le pregunto si está bien", "El momento se vuelve más serio, pero tu amigo se siente escuchado.", "Lumi piensa: notar y frenar cuando algo incomoda a un amigo es cuidar la amistad.", "Nox piensa: puede ser difícil darse cuenta a tiempo cuando estás disfrutando la broma."),
+                RawOption("Sigo como si nada, pensando que se le pasará solo", "Evitas el momento incómodo, pero no atiendes cómo se siente.", "Lumi piensa: ignorar cómo se siente un amigo no ayuda a reparar el momento.", "Nox piensa: a veces de verdad se pasa solo, sin necesidad de hacer un gran tema.")
+            )
+        ),
+        RawDilemma(
+            "dil_amistad_5", SeedIslands.AMISTAD, "El amigo que siempre gana",
+            "Un amigo se enoja mucho cada vez que pierde en un juego, y eso empieza a incomodar al grupo.",
+            4,
+            listOf(
+                RawOption("Dejo que gane siempre para que no se enoje", "Evitas el conflicto, pero el juego deja de ser justo para los demás.", "Lumi piensa: dejarlo ganar siempre no lo ayuda a aprender a manejar perder.", "Nox piensa: a veces es más fácil ceder que lidiar con su enojo."),
+                RawOption("Hablo con él a solas sobre cómo reacciona al perder", "Es incómodo al principio, pero puede ayudarlo a notar su propia reacción.", "Lumi piensa: decirle algo con cariño puede ayudarlo más que solo evitar el tema.", "Nox piensa: puede que se ponga a la defensiva al principio, y eso también es normal."),
+                RawOption("Dejo de invitarlo a jugar para evitar el problema", "El grupo juega más tranquilo, pero tu amigo se queda fuera.", "Lumi piensa: alejarlo no lo ayuda a mejorar, solo evita el problema por ahora.", "Nox piensa: a veces necesitas un descanso del conflicto antes de poder hablarlo con calma.")
+            )
+        ),
+        RawDilemma(
+            "dil_amistad_6", SeedIslands.AMISTAD, "La amistad por conveniencia",
+            "Notas que un compañero solo te busca cuando necesita copiar la tarea o pedirte algo prestado.",
+            5,
+            listOf(
+                RawOption("Sigo ayudándolo igual, sin decir nada", "Mantienes la relación como está, aunque sientas que es desigual.", "Lumi piensa: seguir ayudando sin hablarlo no cambia el patrón que te incomoda.", "Nox piensa: puede que él no se dé cuenta de cómo se ve desde afuera."),
+                RawOption("Le digo con calma que sientes que solo te busca por interés", "Es incómodo decirlo, pero le das la oportunidad de cambiar.", "Lumi piensa: decir lo que sientes con respeto puede mejorar una relación desequilibrada.", "Nox piensa: puede que se sorprenda o se sienta mal al escucharlo, sin ser su intención."),
+                RawOption("Dejo de ayudarlo sin explicarle por qué", "Pones un límite, pero él se queda sin entender qué pasó.", "Lumi piensa: poner un límite está bien, aunque explicarlo ayuda a que se entienda mejor.", "Nox piensa: a veces no tienes ánimo de dar explicaciones, y también es válido.")
+            )
+        ),
+        RawDilemma(
+            "dil_libertad_4", SeedIslands.LIBERTAD, "El grupo de chat de la clase",
+            "Tus papás te dejan tener un chat grupal con tus compañeros, pero piden revisar los mensajes de vez en cuando.",
+            3,
+            listOf(
+                RawOption("Les muestro el chat cuando lo piden, sin problema", "Mantienes la confianza con tus papás, aunque a veces se sienta invasivo.", "Lumi piensa: aceptar una supervisión razonable no te quita toda tu libertad.", "Nox piensa: puede sentirse incómodo que revisen conversaciones con amigos."),
+                RawOption("Les pido hablar sobre qué tanto necesitan revisar y por qué", "Se abre una conversación honesta sobre confianza y límites.", "Lumi piensa: negociar el límite juntos puede ser más libre que solo aceptarlo o rechazarlo.", "Nox piensa: no siempre los adultos están dispuestos a negociar esto."),
+                RawOption("Borro mensajes antes de mostrarles el chat", "Sientes que proteges tu privacidad, pero arriesgas la confianza si lo descubren.", "Lumi piensa: ocultar algo puede dañar la confianza más de lo que protege tu libertad.", "Nox piensa: es comprensible querer un espacio propio, aunque no sea la mejor forma de lograrlo.")
+            )
+        ),
+        RawDilemma(
+            "dil_libertad_5", SeedIslands.LIBERTAD, "Elegir la actividad extra",
+            "Tus papás te dejan elegir una actividad extraescolar, pero prefieren que sea algo distinto a lo que tú quieres.",
+            4,
+            listOf(
+                RawOption("Elijo lo que yo quiero, sin importar su opinión", "Sigues tu propio interés, aunque ellos no estén de acuerdo.", "Lumi piensa: elegir lo que de verdad te gusta es parte de ser libre.", "Nox piensa: ignorar por completo su opinión puede generar más conflicto en casa."),
+                RawOption("Elijo lo que ellos prefieren para evitar discutir", "Evitas el conflicto, pero no haces lo que realmente querías.", "Lumi piensa: ceder del todo tampoco es la única forma de mostrar respeto.", "Nox piensa: a veces es más fácil ceder que sostener lo que uno quiere."),
+                RawOption("Les explico por qué prefiero mi opción y escucho la de ellos", "Tarda más llegar a un acuerdo, pero ambos se sienten escuchados.", "Lumi piensa: explicar tus razones y escuchar las de otros es una libertad más madura.", "Nox piensa: no siempre se llega a un acuerdo, aunque lo intenten con calma.")
+            )
+        ),
+        RawDilemma(
+            "dil_libertad_6", SeedIslands.LIBERTAD, "El compañero que no quiere jugar el juego que todos eligieron",
+            "En el recreo, el grupo vota jugar a algo y un compañero no quiere participar porque prefiere otra cosa.",
+            5,
+            listOf(
+                RawOption("Lo obligamos a jugar porque 'ganó la votación'", "El grupo juega completo, pero él se siente forzado a participar.", "Lumi piensa: ganar una votación no da derecho a obligar a alguien a participar.", "Nox piensa: puede sentirse justo seguir lo que decidió la mayoría."),
+                RawOption("Lo dejamos hacer lo que quiera aparte del grupo", "Respetas su libertad, aunque el grupo se divida un poco.", "Lumi piensa: nadie está obligado a participar en algo que no quiere.", "Nox piensa: puede sentirse un poco solo si se aparta del grupo."),
+                RawOption("Buscamos un juego que combine lo que quieren los dos lados", "Se tarda en decidir, pero se busca incluir a todos de alguna forma.", "Lumi piensa: buscar una opción intermedia respeta la libertad de todos a la vez.", "Nox piensa: no siempre existe un juego que combine gustos tan distintos.")
+            )
+        ),
+        RawDilemma(
+            "dil_resp_4", SeedIslands.RESPONSABILIDAD, "La mascota que se escapó",
+            "Te encargas de cerrar la jaula del hámster de la clase, pero un día se te olvida y el hámster se escapa.",
+            3,
+            listOf(
+                RawOption("No digo nada y espero que alguien más lo encuentre", "Evitas el momento incómodo, pero nadie sabe que hay que buscarlo con cuidado.", "Lumi piensa: avisar rápido ayuda a que lo encuentren antes de que se lastime.", "Nox piensa: da mucho miedo admitir el descuido enseguida."),
+                RawOption("Aviso enseguida a la profe y ayudo a buscarlo", "Es incómodo admitirlo, pero se actúa rápido para encontrarlo.", "Lumi piensa: avisar de inmediato es la forma más responsable de reparar un descuido.", "Nox piensa: no siempre es fácil hablar enseguida cuando algo sale mal."),
+                RawOption("Busco al hámster yo solo antes de decir algo", "Puedes encontrarlo o no, pero pierdes tiempo valioso sin ayuda del grupo.", "Lumi piensa: pedir ayuda antes suele ser más efectivo que intentarlo solo primero.", "Nox piensa: es comprensible querer arreglarlo tú mismo antes de admitir el error.")
+            )
+        ),
+        RawDilemma(
+            "dil_resp_5", SeedIslands.RESPONSABILIDAD, "El compromiso que ya no puedes cumplir",
+            "Te comprometes a ayudar a un compañero con un proyecto, pero luego te das cuenta de que tienes demasiadas cosas pendientes.",
+            4,
+            listOf(
+                RawOption("Sigo con el compromiso aunque no dé abasto", "Cumples lo prometido, aunque termines muy cansado o con trabajos a medias.", "Lumi piensa: cumplir lo prometido es importante, aunque también hay que cuidar tus propios límites.", "Nox piensa: forzarte demasiado puede afectar tanto tu ayuda como tus propias tareas."),
+                RawOption("Le aviso pronto que no podré ayudar como pensaba", "Es incómodo decirlo, pero le das tiempo para buscar otra solución.", "Lumi piensa: avisar a tiempo es más responsable que desaparecer sin explicación.", "Nox piensa: puede sentirse mal decir que no después de haber dicho que sí."),
+                RawOption("Dejo de responder sus mensajes para no tener que explicarlo", "Evitas la conversación incómoda, pero tu compañero se queda sin saber qué pasó.", "Lumi piensa: desaparecer sin avisar suele doler más que decir la verdad a tiempo.", "Nox piensa: a veces cuesta mucho encontrar las palabras para decir que no puedes.")
+            )
+        ),
+        RawDilemma(
+            "dil_resp_6", SeedIslands.RESPONSABILIDAD, "El material prestado que se dañó",
+            "Pides prestados unos colores a un compañero y, sin darte cuenta, uno se rompe mientras los usas.",
+            5,
+            listOf(
+                RawOption("Los devuelvo sin decir nada del color roto", "Evitas el momento incómodo, pero tu compañero puede descubrirlo después.", "Lumi piensa: no contarlo puede hacer que confíe menos en prestarte cosas otra vez.", "Nox piensa: puede que ni siquiera note el color roto entre tantos otros."),
+                RawOption("Le cuento lo que pasó y le ofrezco reponerlo", "Es incómodo admitirlo, pero mantienes la confianza para futuros préstamos.", "Lumi piensa: contar lo que pasó y ofrecer reparar el daño muestra responsabilidad real.", "Nox piensa: no siempre es fácil, sobre todo si no tienes cómo reponerlo enseguida."),
+                RawOption("Le compro uno nuevo sin explicarle qué pasó", "Reparas el daño material, pero él no sabe realmente qué ocurrió.", "Lumi piensa: reparar el daño está bien, pero explicar lo que pasó también importa.", "Nox piensa: a veces es más fácil resolverlo en silencio que dar explicaciones.")
+            )
+        ),
+        RawDilemma(
+            "dil_conv_4", SeedIslands.CONVIVENCIA, "El compañero que come distinto",
+            "Un compañero trae siempre una comida muy distinta a la del resto, y algunos hacen comentarios sobre el olor o el aspecto.",
+            3,
+            listOf(
+                RawOption("Me quedo callado aunque escuche los comentarios", "No participas en la burla, pero tampoco la frenas.", "Lumi piensa: quedarte callado ya evita sumar a la burla, aunque se puede hacer más.", "Nox piensa: no siempre te animas a decir algo frente al grupo."),
+                RawOption("Le digo al grupo que pare con los comentarios", "Es un poco incómodo, pero defiendes a tu compañero frente a todos.", "Lumi piensa: decir algo cuando ves una burla ayuda a cambiar el ambiente del grupo.", "Nox piensa: puede que el grupo se ponga a la defensiva contigo también."),
+                RawOption("Me siento con él y le pregunto sobre su comida", "Puede sentirse raro al principio, pero él se siente acompañado.", "Lumi piensa: interesarte de verdad por lo distinto ayuda más que solo callar la burla.", "Nox piensa: acercarte no borra los comentarios que ya escuchó antes.")
+            )
+        ),
+        RawDilemma(
+            "dil_conv_5", SeedIslands.CONVIVENCIA, "El idioma que no todos entienden",
+            "En un grupo de trabajo, dos compañeros hablan entre ellos en otro idioma que el resto no entiende.",
+            4,
+            listOf(
+                RawOption("Les pido que dejen de hablar en ese idioma", "El grupo entiende todo, pero ellos sienten que se les pide dejar de ser ellos mismos.", "Lumi piensa: pedirlo sin explicar puede sentirse como rechazar su idioma.", "Nox piensa: es comprensible querer entender todo lo que se dice en tu propio grupo."),
+                RawOption("Les pido que, si pueden, traduzcan lo importante para el grupo", "Se tarda un poco más, pero todos quedan incluidos en lo esencial.", "Lumi piensa: pedir traducción en vez de silencio total respeta ambas necesidades.", "Nox piensa: no siempre es fácil traducir todo en el momento."),
+                RawOption("No digo nada y sigo trabajando aparte de esa conversación", "Evitas el conflicto, pero te pierdes de participar en esa parte del grupo.", "Lumi piensa: quedarte al margen no resuelve la sensación de exclusión.", "Nox piensa: a veces es más cómodo simplemente seguir con tu parte del trabajo.")
+            )
+        ),
+        RawDilemma(
+            "dil_conv_6", SeedIslands.CONVIVENCIA, "La regla del salón que a nadie le gusta",
+            "La clase tiene una norma de silencio total durante el trabajo individual, y varios compañeros creen que es demasiado estricta.",
+            5,
+            listOf(
+                RawOption("La rompo cuando creo que nadie se dará cuenta", "A veces funciona, pero rompe una norma que el grupo acordó seguir.", "Lumi piensa: romper una norma en secreto no ayuda a cambiarla de verdad.", "Nox piensa: es comprensible que una norma estricta cueste seguir todo el tiempo."),
+                RawOption("La sigo aunque no me guste, sin decir nada", "Mantienes la convivencia del grupo, aunque sientas que la norma es injusta.", "Lumi piensa: seguir una norma con la que no estás de acuerdo también es parte de convivir.", "Nox piensa: quedarse con la molestia sin decirla puede acumularse con el tiempo."),
+                RawOption("Propongo al grupo hablarlo con la profe para ajustarla juntos", "Tarda más lograr un cambio, pero se hace de forma que todos puedan aceptar.", "Lumi piensa: proponer un cambio de forma abierta respeta la convivencia del grupo.", "Nox piensa: no siempre la profe está dispuesta a cambiar una norma ya establecida.")
             )
         )
     )

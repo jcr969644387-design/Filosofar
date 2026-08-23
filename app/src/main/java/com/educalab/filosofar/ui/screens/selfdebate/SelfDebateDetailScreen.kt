@@ -2,6 +2,8 @@ package com.educalab.filosofar.ui.screens.selfdebate
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,7 +80,7 @@ fun SelfDebateDetailScreen(viewModel: SelfDebateDetailViewModel, onBack: () -> U
                 Text(debate.topic, color = TextOnDark, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, maxLines = 2)
             }
 
-            Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
                 if (!state.confirmed) {
                     Text("Arrastra cada ficha hasta la postura donde crees que encaja:", color = TextOnDarkMuted, style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(10.dp))
@@ -111,7 +113,7 @@ fun SelfDebateDetailScreen(viewModel: SelfDebateDetailViewModel, onBack: () -> U
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    Row(modifier = Modifier.weight(1f)) {
+                    Row(modifier = Modifier.height(260.dp)) {
                         DebateColumn(
                             label = debate.sideALabel,
                             accent = LumiYellow,

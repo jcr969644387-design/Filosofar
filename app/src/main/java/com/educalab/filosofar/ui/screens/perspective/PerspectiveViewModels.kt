@@ -5,15 +5,29 @@ import androidx.lifecycle.viewModelScope
 import com.educalab.filosofar.data.repository.PerspectiveRepository
 import com.educalab.filosofar.domain.model.PerspectiveExercise
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class PerspectiveListViewModel(islandId: String, repository: PerspectiveRepository) : ViewModel() {
-    val exercises: StateFlow<List<PerspectiveExercise>> = repository.observeByIsland(islandId)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+data class PerspectiveListUiState(
+    val exercises: List<PerspectiveExercise> = emptyList(),
+    val unlockedCount: Int = 0,
+    val completedIds: Set<String> = emptySet()
+)
+
+class PerspectiveListViewModel(islandId: String, private val repository: PerspectiveRepository) : ViewModel() {
+    private val _uiState = MutableStateFlow(PerspectiveListUiState())
+    val uiState: StateFlow<PerspectiveListUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val unlockState = repository.getIslandUnlockState(islandId)
+            _uiState.value = _uiState.value.copy(exercises = unlockState.exercises, unlockedCount = unlockState.unlockedCount)
+            repository.observeCompletedIds(islandId).collect { completed ->
+                _uiState.value = _uiState.value.copy(completedIds = completed)
+            }
+        }
+    }
 }
 
 data class PerspectiveDetailUiState(

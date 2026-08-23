@@ -68,7 +68,8 @@ data class PerspectiveExercise(
     val roleAViewpoint: String,
     val roleBText: String,
     val roleBViewpoint: String,
-    val reflectionPrompt: String
+    val reflectionPrompt: String,
+    val orderInIsland: Int = 0
 )
 
 enum class LogicChallengeType { SEQUENCE, MATCH, SPOT_FLAW }

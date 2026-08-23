@@ -1,5 +1,6 @@
 package com.educalab.filosofar.ui.screens.map
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -84,10 +89,30 @@ fun MapScreen(
                             onClick = { if (progress.status != ModuleStatus.LOCKED) onOpenIsland(island.id) }
                         )
                     }
+                    if (index < ordered.lastIndex) {
+                        BridgeConnector(unlocked = ordered[index + 1].second.status != ModuleStatus.LOCKED)
+                    }
                 }
             }
 
             BottomQuickBar(onOpenJournal, onOpenProgress, onOpenOpinionRevision)
+        }
+    }
+}
+
+/** Puente entre dos islas consecutivas: se dibuja marcado y sólido cuando la siguiente isla ya está desbloqueada. */
+@Composable
+private fun BridgeConnector(unlocked: Boolean) {
+    Box(modifier = Modifier.fillMaxWidth().height(28.dp), contentAlignment = Alignment.Center) {
+        Canvas(modifier = Modifier.width(6.dp).fillMaxHeight()) {
+            drawLine(
+                color = if (unlocked) Color.White.copy(alpha = 0.55f) else Color.White.copy(alpha = 0.15f),
+                start = Offset(size.width / 2f, 0f),
+                end = Offset(size.width / 2f, size.height),
+                strokeWidth = if (unlocked) 8f else 5f,
+                cap = StrokeCap.Round,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f))
+            )
         }
     }
 }

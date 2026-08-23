@@ -1,14 +1,11 @@
 package com.educalab.filosofar.ui.screens.onboarding
 
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,10 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.foundation.background
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +37,7 @@ import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CrystalCyan
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
+import kotlinx.coroutines.launch
 
 private data class OnboardPage(val title: String, val body: String)
 
@@ -65,8 +62,8 @@ private val pages = listOf(
 
 @Composable
 fun OnboardingScreen(onFinished: () -> Unit) {
-    var pageIndex by remember { mutableIntStateOf(0) }
-    val page = pages[pageIndex]
+    val pagerState = rememberPagerState(pageCount = { pages.size })
+    val scope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
@@ -75,50 +72,56 @@ fun OnboardingScreen(onFinished: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.safeDrawing)
-                .verticalScroll(rememberScrollState())
                 .padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                if (pageIndex < pages.lastIndex) {
+                if (pagerState.currentPage < pages.lastIndex) {
                     TextButton(onClick = onFinished) {
                         Text("Saltar", color = TextOnDarkMuted)
                     }
                 }
             }
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier.size(180.dp), contentAlignment = Alignment.Center) {
-                    when (pageIndex) {
-                        0 -> CrystalOfIdeas(modifier = Modifier.size(120.dp))
-                        1 -> Row {
-                            LumiCharacter(modifier = Modifier.size(90.dp))
-                            NoxCharacter(modifier = Modifier.size(90.dp))
+            HorizontalPager(state = pagerState, modifier = Modifier.weight(1f).fillMaxWidth()) { pageIndex ->
+                val page = pages[pageIndex]
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Box(modifier = Modifier.size(180.dp), contentAlignment = Alignment.Center) {
+                        when (pageIndex) {
+                            0 -> CrystalOfIdeas(modifier = Modifier.size(120.dp))
+                            1 -> Row {
+                                LumiCharacter(modifier = Modifier.size(90.dp))
+                                NoxCharacter(modifier = Modifier.size(90.dp))
+                            }
+                            2 -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                repeat(3) { CrystalOfIdeas(modifier = Modifier.size(48.dp)) }
+                            }
+                            else -> LumiCharacter(modifier = Modifier.size(120.dp))
                         }
-                        2 -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            repeat(3) { CrystalOfIdeas(modifier = Modifier.size(48.dp)) }
-                        }
-                        else -> LumiCharacter(modifier = Modifier.size(120.dp))
                     }
+
+                    Spacer()
+
+                    Text(
+                        page.title,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextOnDark,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    Spacer()
+                    Text(
+                        page.body,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = TextOnDarkMuted,
+                        textAlign = TextAlign.Center
+                    )
                 }
-
-                Spacer()
-
-                Text(
-                    page.title,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = TextOnDark,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                Spacer()
-                Text(
-                    page.body,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextOnDarkMuted,
-                    textAlign = TextAlign.Center
-                )
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
@@ -126,23 +129,27 @@ fun OnboardingScreen(onFinished: () -> Unit) {
                     pages.indices.forEach { i ->
                         Box(
                             modifier = Modifier
-                                .size(if (i == pageIndex) 10.dp else 7.dp)
+                                .size(if (i == pagerState.currentPage) 10.dp else 7.dp)
                                 .clip(CircleShape)
-                                .background(if (i == pageIndex) CrystalCyan else TextOnDarkMuted.copy(alpha = 0.4f))
+                                .background(if (i == pagerState.currentPage) CrystalCyan else TextOnDarkMuted.copy(alpha = 0.4f))
                         )
                     }
                 }
                 Spacer()
                 Button(
                     onClick = {
-                        if (pageIndex < pages.lastIndex) pageIndex++ else onFinished()
+                        if (pagerState.currentPage < pages.lastIndex) {
+                            scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
+                        } else {
+                            onFinished()
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = CrystalCyan)
                 ) {
-                    Text(if (pageIndex < pages.lastIndex) "Siguiente" else "¡Empezar a explorar!", fontWeight = FontWeight.Bold)
+                    Text(if (pagerState.currentPage < pages.lastIndex) "Siguiente" else "¡Empezar a explorar!", fontWeight = FontWeight.Bold)
                 }
             }
         }

@@ -3,11 +3,11 @@ package com.educalab.filosofar.data.repository
 import com.educalab.filosofar.data.local.dao.DailyQuestionDao
 import com.educalab.filosofar.data.local.entity.DailyQuestionUnlockEntity
 import com.educalab.filosofar.data.local.entity.QuestionAttemptEntity
+import com.educalab.filosofar.domain.logic.DayGating
 import com.educalab.filosofar.domain.model.DailyQuestion
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import java.util.Calendar
 
 /** Estado de la Pregunta del día para una isla, en el momento actual. */
 sealed class DailyQuestionDayState {
@@ -34,7 +34,7 @@ class DailyQuestionRepository(
         val ordered = dao.listByIslandOnce(islandId)
         if (ordered.isEmpty()) return DailyQuestionDayState.NoQuestions
 
-        val todayKey = logicalDayKey()
+        val todayKey = DayGating.logicalDayKey()
         val anchor = dao.getUnlockAnchor(islandId) ?: DailyQuestionUnlockEntity(islandId, todayKey).also {
             dao.insertUnlockAnchor(it)
         }
@@ -68,20 +68,6 @@ class DailyQuestionRepository(
             )
         )
         progressRepository.recalculateAll()
-    }
-
-    /** Día lógico local: la fecha cambia a las 6:00 am, no a medianoche. */
-    private fun logicalDayKey(atMillis: Long = System.currentTimeMillis()): Long {
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = atMillis
-        if (cal.get(Calendar.HOUR_OF_DAY) < 6) {
-            cal.add(Calendar.DAY_OF_YEAR, -1)
-        }
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        return cal.timeInMillis / 86_400_000L
     }
 
     private fun com.educalab.filosofar.data.local.entity.DailyQuestionEntity.toDomain() =

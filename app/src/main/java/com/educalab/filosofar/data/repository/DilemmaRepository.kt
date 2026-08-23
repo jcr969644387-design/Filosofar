@@ -2,10 +2,15 @@ package com.educalab.filosofar.data.repository
 
 import com.educalab.filosofar.data.local.dao.DilemmaDao
 import com.educalab.filosofar.data.local.entity.DilemmaAttemptEntity
+import com.educalab.filosofar.data.local.entity.DilemmaUnlockEntity
+import com.educalab.filosofar.domain.logic.DayGating
 import com.educalab.filosofar.domain.model.Dilemma
 import com.educalab.filosofar.domain.model.DilemmaOption
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+
+/** Estado de desbloqueo diario de dilemas para una isla. */
+data class DilemmaUnlockState(val dilemmas: List<Dilemma>, val unlockedCount: Int)
 
 class DilemmaRepository(
     private val dao: DilemmaDao,
@@ -13,6 +18,23 @@ class DilemmaRepository(
 ) {
     fun observeByIsland(islandId: String): Flow<List<Dilemma>> =
         dao.observeByIsland(islandId).map { list -> list.map { entity -> entity.toDomain(emptyList()) } }
+
+    /** Calcula cuántos dilemas de la isla están desbloqueados hoy (5 nuevos por día). */
+    suspend fun getIslandUnlockState(islandId: String): DilemmaUnlockState {
+        val ordered = dao.listByIslandOnce(islandId).map { it.toDomain(emptyList()) }
+        if (ordered.isEmpty()) return DilemmaUnlockState(emptyList(), 0)
+
+        val todayKey = DayGating.logicalDayKey()
+        val anchor = dao.getUnlockAnchor(islandId) ?: DilemmaUnlockEntity(islandId, todayKey).also {
+            dao.insertUnlockAnchor(it)
+        }
+        val dayIndex = (todayKey - anchor.startDayKey).toInt().coerceAtLeast(0)
+        val unlockedCount = ((dayIndex + 1) * ITEMS_PER_DAY).coerceAtMost(ordered.size)
+        return DilemmaUnlockState(ordered, unlockedCount)
+    }
+
+    fun observeCompletedIds(islandId: String): Flow<Set<String>> =
+        dao.observeCompletedInIsland(islandId).map { it.toSet() }
 
     suspend fun latestAttempt(dilemmaId: String): DilemmaAttemptEntity? = dao.latestAttemptFor(dilemmaId)
 
@@ -38,4 +60,8 @@ class DilemmaRepository(
 
     private fun com.educalab.filosofar.data.local.entity.DilemmaEntity.toDomain(options: List<DilemmaOption>) =
         Dilemma(id, islandId, title, scenario, options)
+
+    companion object {
+        private const val ITEMS_PER_DAY = 5
+    }
 }
