@@ -30,6 +30,7 @@ class DatabaseSeeder(private val db: AppDatabase) {
             val dilemmasTotal = SeedDilemmas.dilemmas.count { it.islandId == island.id }
             val logicTotal = SeedLogicChallenges.challenges.count { it.islandId == island.id }
             val perspectivesTotal = SeedPerspectives.all.count { it.islandId == island.id }
+            val debatesTotal = SeedSelfDebates.debates.count { it.islandId == island.id }
             IslandProgressEntity(
                 islandId = island.id,
                 crystalsEarned = 0,
@@ -42,6 +43,8 @@ class DatabaseSeeder(private val db: AppDatabase) {
                 logicTotal = logicTotal,
                 perspectivesCompleted = 0,
                 perspectivesTotal = perspectivesTotal,
+                debatesCompleted = 0,
+                debatesTotal = debatesTotal,
                 status = if (island.unlockRequiredCrystals == 0) "AVAILABLE" else "LOCKED",
                 lastUpdatedEpochMs = now
             )

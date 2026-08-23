@@ -24,6 +24,8 @@ data class IslandProgress(
     val logicTotal: Int,
     val perspectivesCompleted: Int,
     val perspectivesTotal: Int,
+    val debatesCompleted: Int,
+    val debatesTotal: Int,
     val status: ModuleStatus
 ) {
     val percentComplete: Int

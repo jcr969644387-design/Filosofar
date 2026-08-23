@@ -59,7 +59,7 @@ fun SelfDebateListScreen(viewModel: SelfDebateListViewModel, onBack: () -> Unit,
                         )
                     }
                 }
-                itemsIndexed(state.debates) { index, d ->
+                itemsIndexed(state.debates, key = { _, d -> d.id }) { index, d ->
                     val unlocked = index < state.unlockedCount
                     val completed = d.id in state.completedIds
                     DebateCard(

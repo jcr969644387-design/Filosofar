@@ -59,7 +59,7 @@ fun PerspectiveListScreen(viewModel: PerspectiveListViewModel, onBack: () -> Uni
                         )
                     }
                 }
-                itemsIndexed(state.exercises) { index, ex ->
+                itemsIndexed(state.exercises, key = { _, ex -> ex.id }) { index, ex ->
                     val unlocked = index < state.unlockedCount
                     val completed = ex.id in state.completedIds
                     val dayNumber = (index / 5) + 1

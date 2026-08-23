@@ -105,7 +105,7 @@ fun IslandDetailScreen(
                     ModuleLink("⚖️", "Dilemas interactivos", "Decide y descubre las miradas de Lumi y Nox.", progress.dilemmasCompleted, progress.dilemmasTotal, onOpenDilemmas),
                     ModuleLink("👀", "Otro punto de vista", "Vive la misma escena desde otro papel.", progress.perspectivesCompleted, progress.perspectivesTotal, onOpenPerspectives),
                     ModuleLink("🧩", "Laboratorio de lógica", "Ordena, conecta y detecta fallos de razonamiento.", progress.logicSolved, progress.logicTotal, onOpenLogicLab),
-                    ModuleLink("🗣️", "Debate conmigo mismo", "Construye argumentos para dos posturas distintas.", 0, 1, onOpenDebates)
+                    ModuleLink("🗣️", "Debate conmigo mismo", "Construye argumentos para dos posturas distintas.", progress.debatesCompleted, progress.debatesTotal, onOpenDebates)
                 )
 
                 LazyColumn(

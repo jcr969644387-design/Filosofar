@@ -107,10 +107,10 @@ class AppDatabaseRoomTest {
         DatabaseSeeder(db).seedIfNeeded()
         val islandId = SeedIslands.VERDAD
         db.progressDao().upsert(
-            IslandProgressEntity(islandId, 2, 12, 2, 5, 0, 2, 0, 3, 0, 2, "STARTED", 1000L)
+            IslandProgressEntity(islandId, 2, 12, 2, 5, 0, 2, 0, 3, 0, 2, 0, 1, "STARTED", 1000L)
         )
         db.progressDao().upsert(
-            IslandProgressEntity(islandId, 5, 12, 5, 5, 0, 2, 0, 3, 0, 2, "COMPLETED", 2000L)
+            IslandProgressEntity(islandId, 5, 12, 5, 5, 0, 2, 0, 3, 0, 2, 0, 1, "COMPLETED", 2000L)
         )
         val result = db.progressDao().get(islandId)
         assertEquals(5, result?.crystalsEarned)

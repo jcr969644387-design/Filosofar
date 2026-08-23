@@ -60,7 +60,7 @@ fun DilemmaListScreen(viewModel: DilemmaListViewModel, onBack: () -> Unit, onOpe
                         )
                     }
                 }
-                itemsIndexed(state.dilemmas) { index, d ->
+                itemsIndexed(state.dilemmas, key = { _, d -> d.id }) { index, d ->
                     val unlocked = index < state.unlockedCount
                     val completed = d.id in state.completedIds
                     val dayNumber = (index / 5) + 1

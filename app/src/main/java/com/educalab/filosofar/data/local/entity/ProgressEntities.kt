@@ -35,6 +35,8 @@ data class IslandProgressEntity(
     val logicTotal: Int,
     val perspectivesCompleted: Int,
     val perspectivesTotal: Int,
+    val debatesCompleted: Int,
+    val debatesTotal: Int,
     val status: String, // LOCKED | AVAILABLE | STARTED | COMPLETED | MASTERED
     val lastUpdatedEpochMs: Long
 )

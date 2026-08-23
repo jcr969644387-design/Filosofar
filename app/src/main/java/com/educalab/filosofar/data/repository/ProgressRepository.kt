@@ -26,10 +26,10 @@ import kotlinx.coroutines.flow.map
 
 /**
  * Repositorio central de progreso. Cada vez que se guarda un intento en
- * cualquier módulo (pregunta, dilema, lógica, perspectiva), se debe llamar a
- * [recalculateAll] para que el mapa y las insignias reflejen la realidad.
- * Nunca se incrementa un contador manualmente: todo se deriva de las tablas
- * de intentos.
+ * cualquier módulo (pregunta, dilema, lógica, perspectiva, debate), se debe
+ * llamar a [recalculateAll] para que el mapa y las insignias reflejen la
+ * realidad. Nunca se incrementa un contador manualmente: todo se deriva de
+ * las tablas de intentos.
  */
 class ProgressRepository(
     private val islandDao: IslandDao,
@@ -61,6 +61,8 @@ class ProgressRepository(
                 logicTotal = it.logicTotal,
                 perspectivesCompleted = it.perspectivesCompleted,
                 perspectivesTotal = it.perspectivesTotal,
+                debatesCompleted = it.debatesCompleted,
+                debatesTotal = it.debatesTotal,
                 status = ModuleStatus.valueOf(it.status)
             )
         }
@@ -82,15 +84,18 @@ class ProgressRepository(
 
     fun observeTotalCrystals(): Flow<Int> = progressDao.observeTotalCrystals()
 
-    /** Recalcula progreso de todas las islas y evalúa insignias. Llamar tras cada intento nuevo. */
+    /**
+     * Recalcula progreso de todas las islas y evalúa insignias. Llamar tras
+     * cada intento nuevo. Las islas se desbloquean en orden: la primera
+     * siempre está disponible, y cada isla siguiente se desbloquea solo
+     * cuando la anterior completa todas las misiones de su día 1 (la
+     * pregunta del día, 5 dilemas, 5 ejercicios de perspectiva, los 3 retos
+     * de lógica del día 1 y el primer debate).
+     */
     suspend fun recalculateAll() {
-        val islands = islandDao.observeAll()
-        // Se lee una vez de forma directa vía DAO síncrono auxiliar para evitar acoplar a Flow aquí:
         val allIslands = islandDaoSnapshot()
-        var globalCrystals = 0
         val computedList = mutableListOf<IslandProgressEntity>()
 
-        // Primera pasada: crystalsEarned por isla (no depende de orden de desbloqueo)
         val perIslandRaw = allIslands.associateWith { island ->
             val questionsTotal = countQuestionsTotal(island.id)
             val questionsAnswered = questionDao.countAnsweredInIsland(island.id)
@@ -100,9 +105,10 @@ class ProgressRepository(
             val logicSolved = logicDao.countSolvedInIsland(island.id)
             val perspectivesTotal = countPerspectivesTotal(island.id)
             val perspectivesCompleted = perspectiveDao.countCompletedInIsland(island.id)
+            val debatesTotal = countDebatesTotal(island.id)
+            val debatesCompleted = debateDao.countCompletedInIsland(island.id)
             IslandRawCounts(
                 islandId = island.id,
-                unlockRequiredCrystals = island.unlockRequiredCrystals,
                 questionsAnswered = questionsAnswered,
                 questionsTotal = questionsTotal,
                 dilemmasCompleted = dilemmasCompleted,
@@ -111,16 +117,17 @@ class ProgressRepository(
                 logicTotal = logicTotal,
                 perspectivesCompleted = perspectivesCompleted,
                 perspectivesTotal = perspectivesTotal,
+                debatesCompleted = debatesCompleted,
+                debatesTotal = debatesTotal,
                 hasOpinionRevisionInIsland = true // ver nota MASTERED en docs; se evalúa de forma simplificada
             )
         }
 
-        globalCrystals = perIslandRaw.values.sumOf { it.questionsAnswered + it.dilemmasCompleted + it.logicSolved + it.perspectivesCompleted }
-
         val now = System.currentTimeMillis()
+        var previousIslandDay1Complete = true // la primera isla siempre está disponible
         allIslands.sortedBy { it.sortOrder }.forEach { island ->
             val raw = perIslandRaw.getValue(island)
-            val computed = ProgressCalculator.compute(raw, globalCrystals)
+            val computed = ProgressCalculator.compute(raw, unlocked = previousIslandDay1Complete)
             computedList += IslandProgressEntity(
                 islandId = island.id,
                 crystalsEarned = computed.crystalsEarned,
@@ -133,9 +140,12 @@ class ProgressRepository(
                 logicTotal = raw.logicTotal,
                 perspectivesCompleted = raw.perspectivesCompleted,
                 perspectivesTotal = raw.perspectivesTotal,
+                debatesCompleted = raw.debatesCompleted,
+                debatesTotal = raw.debatesTotal,
                 status = computed.status.name,
                 lastUpdatedEpochMs = now
             )
+            previousIslandDay1Complete = computed.day1Complete
         }
         progressDao.upsertAll(computedList)
 
@@ -144,8 +154,7 @@ class ProgressRepository(
 
     private suspend fun evaluateAndUnlockBadges(progress: List<IslandProgressEntity>) {
         val stats = ProfileStats(
-            questionsAnswered = questionDao.observeAllAttempts().let { 0 } // placeholder overwritten below
-                .let { countAllQuestionAttempts() },
+            questionsAnswered = countAllQuestionAttempts(),
             dilemmasExplored = countAllDilemmaAttempts(),
             dualPerspectivesViewed = dilemmaDao.countPerspectivesViewedInDilemmas() + perspectiveDao.countRevealedOtherRole(),
             logicChallengesSolved = countAllLogicSolved(),
@@ -155,7 +164,7 @@ class ProgressRepository(
             islandsWithProgress = progress.count { it.crystalsEarned > 0 }
         )
 
-        val met = com.educalab.filosofar.domain.logic.BadgeEngine.evaluateGlobalCriteria(stats)
+        val met = BadgeEngine.evaluateGlobalCriteria(stats)
         val alreadyUnlocked = badgeDao.unlockedIds().toSet()
         val now = System.currentTimeMillis()
 
@@ -165,7 +174,7 @@ class ProgressRepository(
         }
 
         progress.filter { it.status == "COMPLETED" || it.status == "MASTERED" }.forEach { p ->
-            val key = com.educalab.filosofar.domain.logic.BadgeEngine.evaluateIslandCompletion(p.islandId, true)
+            val key = BadgeEngine.evaluateIslandCompletion(p.islandId, true)
             if (key != null && key !in alreadyUnlocked) {
                 val badge = allBadgesSnapshot().firstOrNull { it.unlockCriteriaKey == key }
                 if (badge != null) badgeDao.unlock(UserBadgeEntity(badge.id, now))
@@ -193,6 +202,9 @@ class ProgressRepository(
 
     private suspend fun countPerspectivesTotal(islandId: String) =
         perspectiveDao.observeByIsland(islandId).first().size
+
+    private suspend fun countDebatesTotal(islandId: String) =
+        debateDao.observeByIsland(islandId).first().size
 
     private suspend fun countAllQuestionAttempts() =
         questionDao.observeAllAttempts().first().map { it.questionId }.distinct().size

@@ -60,7 +60,7 @@ fun LogicLabListScreen(viewModel: LogicLabViewModel, onBack: () -> Unit, onOpen:
                         )
                     }
                 }
-                itemsIndexed(state.challenges) { index, c ->
+                itemsIndexed(state.challenges, key = { _, c -> c.id }) { index, c ->
                     val unlocked = index < state.unlockedCount
                     val completed = c.id in state.completedIds
                     val dayNumber = (index / 3) + 1
