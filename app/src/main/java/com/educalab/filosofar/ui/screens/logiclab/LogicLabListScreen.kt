@@ -1,4 +1,4 @@
-﻿package com.educalab.filosofar.ui.screens.logiclab
+package com.educalab.filosofar.ui.screens.logiclab
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,13 +30,14 @@ import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.model.LogicChallenge
 import com.educalab.filosofar.domain.model.LogicChallengeType
 import com.educalab.filosofar.ui.components.OceanSkyBackground
+import com.educalab.filosofar.ui.theme.SuccessGreen
 import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
 
 @Composable
 fun LogicLabListScreen(viewModel: LogicLabViewModel, onBack: () -> Unit, onOpen: (String) -> Unit) {
-    val challenges by viewModel.challenges.collectAsState()
+    val state by viewModel.uiState.collectAsState()
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
         Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
@@ -45,25 +46,55 @@ fun LogicLabListScreen(viewModel: LogicLabViewModel, onBack: () -> Unit, onOpen:
                 Text("Laboratorio de Lógica", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
             }
             LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(challenges) { c ->
-                    val typeLabel = when (c.type) {
-                        LogicChallengeType.SEQUENCE -> "🔢 Ordena el razonamiento"
-                        LogicChallengeType.MATCH -> "🔗 Conecta las piezas"
-                        LogicChallengeType.SPOT_FLAW -> "🔍 Encuentra el fallo"
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(18.dp))
-                            .background(SurfaceCard.copy(alpha = 0.16f))
-                            .clickable { onOpen(c.id) }
-                            .padding(16.dp)
-                    ) {
-                        Text(typeLabel, color = TextOnDarkMuted, style = MaterialTheme.typography.labelLarge)
-                        Text(c.prompt, color = TextOnDark, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 4.dp))
-                    }
+                itemsIndexed(state.challenges) { index, c ->
+                    val unlocked = index < state.unlockedCount
+                    val completed = c.id in state.completedIds
+                    val dayNumber = (index / 3) + 1
+                    LogicChallengeCard(
+                        challenge = c,
+                        unlocked = unlocked,
+                        completed = completed,
+                        dayNumber = dayNumber,
+                        onClick = { if (unlocked) onOpen(c.id) }
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun LogicChallengeCard(challenge: LogicChallenge, unlocked: Boolean, completed: Boolean, dayNumber: Int, onClick: () -> Unit) {
+    val typeLabel = when (challenge.type) {
+        LogicChallengeType.SEQUENCE -> "🔢 Ordena el razonamiento"
+        LogicChallengeType.MATCH -> "🔗 Conecta las piezas"
+        LogicChallengeType.SPOT_FLAW -> "🔍 Encuentra el fallo"
+    }
+    val background = when {
+        completed -> SuccessGreen.copy(alpha = 0.26f)
+        unlocked -> SurfaceCard.copy(alpha = 0.10f)
+        else -> SurfaceCard.copy(alpha = 0.04f)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(background)
+            .clickable(enabled = unlocked, onClick = onClick)
+            .padding(16.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(typeLabel, color = TextOnDarkMuted, style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+            if (completed) {
+                Text("✓", color = SuccessGreen, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+            } else if (!unlocked) {
+                Text("🔒", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+        if (unlocked) {
+            Text(challenge.prompt, color = TextOnDark, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 4.dp))
+        } else {
+            Text("Se desbloquea el día $dayNumber", color = TextOnDarkMuted, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
         }
     }
 }

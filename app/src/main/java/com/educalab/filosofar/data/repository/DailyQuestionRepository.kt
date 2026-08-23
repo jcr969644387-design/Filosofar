@@ -24,6 +24,9 @@ class DailyQuestionRepository(
     fun observeByIsland(islandId: String): Flow<List<DailyQuestion>> =
         dao.observeByIsland(islandId).map { list -> list.map { it.toDomain() } }
 
+    /** Cuántas preguntas del día ya se respondieron en esta isla: motor del desbloqueo del resto de módulos. */
+    suspend fun countAnsweredInIsland(islandId: String): Int = dao.countAnsweredInIsland(islandId)
+
     /**
      * Calcula qué pregunta corresponde mostrar hoy en una isla: se desbloquea
      * una pregunta nueva cada día a partir de las 6:00 am, hasta agotar las

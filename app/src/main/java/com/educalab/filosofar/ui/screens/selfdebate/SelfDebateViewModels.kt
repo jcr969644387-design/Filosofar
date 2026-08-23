@@ -5,15 +5,29 @@ import androidx.lifecycle.viewModelScope
 import com.educalab.filosofar.data.repository.SelfDebateRepository
 import com.educalab.filosofar.domain.model.SelfDebate
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SelfDebateListViewModel(islandId: String, repository: SelfDebateRepository) : ViewModel() {
-    val debates: StateFlow<List<SelfDebate>> = repository.observeByIsland(islandId)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+data class SelfDebateListUiState(
+    val debates: List<SelfDebate> = emptyList(),
+    val unlockedCount: Int = 0,
+    val completedIds: Set<String> = emptySet()
+)
+
+class SelfDebateListViewModel(islandId: String, private val repository: SelfDebateRepository) : ViewModel() {
+    private val _uiState = MutableStateFlow(SelfDebateListUiState())
+    val uiState: StateFlow<SelfDebateListUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val unlockState = repository.getIslandUnlockState(islandId)
+            _uiState.value = _uiState.value.copy(debates = unlockState.debates, unlockedCount = unlockState.unlockedCount)
+            repository.observeCompletedIds(islandId).collect { completed ->
+                _uiState.value = _uiState.value.copy(completedIds = completed)
+            }
+        }
+    }
 }
 
 data class SelfDebateUiState(

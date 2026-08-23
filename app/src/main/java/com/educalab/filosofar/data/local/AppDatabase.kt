@@ -20,7 +20,6 @@ import com.educalab.filosofar.data.local.entity.DebateArgumentEntity
 import com.educalab.filosofar.data.local.entity.DilemmaAttemptEntity
 import com.educalab.filosofar.data.local.entity.DilemmaEntity
 import com.educalab.filosofar.data.local.entity.DilemmaOptionEntity
-import com.educalab.filosofar.data.local.entity.DilemmaUnlockEntity
 import com.educalab.filosofar.data.local.entity.IslandProgressEntity
 import com.educalab.filosofar.data.local.entity.LogicAttemptEntity
 import com.educalab.filosofar.data.local.entity.LogicChallengeEntity
@@ -28,7 +27,6 @@ import com.educalab.filosofar.data.local.entity.LogicChallengeItemEntity
 import com.educalab.filosofar.data.local.entity.OpinionRevisionEntity
 import com.educalab.filosofar.data.local.entity.PerspectiveAttemptEntity
 import com.educalab.filosofar.data.local.entity.PerspectiveExerciseEntity
-import com.educalab.filosofar.data.local.entity.PerspectiveUnlockEntity
 import com.educalab.filosofar.data.local.entity.PhilosophyIslandEntity
 import com.educalab.filosofar.data.local.entity.QuestionAttemptEntity
 import com.educalab.filosofar.data.local.entity.ReasonCardEntity
@@ -55,11 +53,9 @@ import com.educalab.filosofar.data.local.entity.VoiceReflectionMetadataEntity
         DilemmaEntity::class,
         DilemmaOptionEntity::class,
         DilemmaAttemptEntity::class,
-        DilemmaUnlockEntity::class,
         ReasonCardEntity::class,
         PerspectiveExerciseEntity::class,
         PerspectiveAttemptEntity::class,
-        PerspectiveUnlockEntity::class,
         LogicChallengeEntity::class,
         LogicChallengeItemEntity::class,
         LogicAttemptEntity::class,
@@ -73,7 +69,7 @@ import com.educalab.filosofar.data.local.entity.VoiceReflectionMetadataEntity
         BadgeEntity::class,
         UserBadgeEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

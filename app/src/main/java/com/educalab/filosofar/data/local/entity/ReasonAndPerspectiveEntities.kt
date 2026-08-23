@@ -36,13 +36,6 @@ data class PerspectiveExerciseEntity(
     val orderInIsland: Int = 0
 )
 
-/** Ancla del desbloqueo diario de "Otro punto de vista" por isla: 5 ejercicios nuevos cada día. */
-@Entity(tableName = "perspective_unlock")
-data class PerspectiveUnlockEntity(
-    @PrimaryKey val islandId: String,
-    val startDayKey: Long
-)
-
 /**
  * Registro de qué ejercicios de perspectiva completó el usuario y si marcó
  * haber "visto" realmente ambos puntos de vista (auto-reporte simple, sin

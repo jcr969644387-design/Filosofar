@@ -3,8 +3,6 @@ package com.educalab.filosofar.data.repository
 import com.educalab.filosofar.data.local.dao.PerspectiveDao
 import com.educalab.filosofar.data.local.dao.ReasonCardDao
 import com.educalab.filosofar.data.local.entity.PerspectiveAttemptEntity
-import com.educalab.filosofar.data.local.entity.PerspectiveUnlockEntity
-import com.educalab.filosofar.domain.logic.DayGating
 import com.educalab.filosofar.domain.model.PerspectiveExercise
 import com.educalab.filosofar.domain.model.ReasonCard
 import kotlinx.coroutines.flow.Flow
@@ -24,22 +22,23 @@ class ReasonCardRepository(private val dao: ReasonCardDao) {
 
 class PerspectiveRepository(
     private val dao: PerspectiveDao,
-    private val progressRepository: ProgressRepository
+    private val progressRepository: ProgressRepository,
+    private val dailyQuestionRepository: DailyQuestionRepository
 ) {
     fun observeByIsland(islandId: String): Flow<List<PerspectiveExercise>> =
         dao.observeByIsland(islandId).map { list -> list.map { it.toDomain() } }
 
-    /** Calcula cuántos ejercicios de la isla están desbloqueados hoy (5 nuevos por día). */
+    /**
+     * Calcula cuántos ejercicios de la isla están desbloqueados: se
+     * desbloquean 5 nuevos por cada pregunta del día que ya se respondió en
+     * esa isla.
+     */
     suspend fun getIslandUnlockState(islandId: String): PerspectiveUnlockState {
         val ordered = dao.listByIslandOnce(islandId).map { it.toDomain() }
         if (ordered.isEmpty()) return PerspectiveUnlockState(emptyList(), 0)
 
-        val todayKey = DayGating.logicalDayKey()
-        val anchor = dao.getUnlockAnchor(islandId) ?: PerspectiveUnlockEntity(islandId, todayKey).also {
-            dao.insertUnlockAnchor(it)
-        }
-        val dayIndex = (todayKey - anchor.startDayKey).toInt().coerceAtLeast(0)
-        val unlockedCount = ((dayIndex + 1) * ITEMS_PER_DAY).coerceAtMost(ordered.size)
+        val answered = dailyQuestionRepository.countAnsweredInIsland(islandId)
+        val unlockedCount = (answered * ITEMS_PER_DAY).coerceAtMost(ordered.size)
         return PerspectiveUnlockState(ordered, unlockedCount)
     }
 

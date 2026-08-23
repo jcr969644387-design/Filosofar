@@ -2,8 +2,6 @@ package com.educalab.filosofar.data.repository
 
 import com.educalab.filosofar.data.local.dao.DilemmaDao
 import com.educalab.filosofar.data.local.entity.DilemmaAttemptEntity
-import com.educalab.filosofar.data.local.entity.DilemmaUnlockEntity
-import com.educalab.filosofar.domain.logic.DayGating
 import com.educalab.filosofar.domain.model.Dilemma
 import com.educalab.filosofar.domain.model.DilemmaOption
 import kotlinx.coroutines.flow.Flow
@@ -14,22 +12,22 @@ data class DilemmaUnlockState(val dilemmas: List<Dilemma>, val unlockedCount: In
 
 class DilemmaRepository(
     private val dao: DilemmaDao,
-    private val progressRepository: ProgressRepository
+    private val progressRepository: ProgressRepository,
+    private val dailyQuestionRepository: DailyQuestionRepository
 ) {
     fun observeByIsland(islandId: String): Flow<List<Dilemma>> =
         dao.observeByIsland(islandId).map { list -> list.map { entity -> entity.toDomain(emptyList()) } }
 
-    /** Calcula cuántos dilemas de la isla están desbloqueados hoy (5 nuevos por día). */
+    /**
+     * Calcula cuántos dilemas de la isla están desbloqueados: se desbloquean
+     * 5 nuevos por cada pregunta del día que ya se respondió en esa isla.
+     */
     suspend fun getIslandUnlockState(islandId: String): DilemmaUnlockState {
         val ordered = dao.listByIslandOnce(islandId).map { it.toDomain(emptyList()) }
         if (ordered.isEmpty()) return DilemmaUnlockState(emptyList(), 0)
 
-        val todayKey = DayGating.logicalDayKey()
-        val anchor = dao.getUnlockAnchor(islandId) ?: DilemmaUnlockEntity(islandId, todayKey).also {
-            dao.insertUnlockAnchor(it)
-        }
-        val dayIndex = (todayKey - anchor.startDayKey).toInt().coerceAtLeast(0)
-        val unlockedCount = ((dayIndex + 1) * ITEMS_PER_DAY).coerceAtMost(ordered.size)
+        val answered = dailyQuestionRepository.countAnsweredInIsland(islandId)
+        val unlockedCount = (answered * ITEMS_PER_DAY).coerceAtMost(ordered.size)
         return DilemmaUnlockState(ordered, unlockedCount)
     }
 

@@ -141,8 +141,9 @@ private fun DrawScope.drawBoyCap(spec: AvatarSpec) {
     val cx = size.width * 0.5f; val cy = size.height * 0.34f; val r = size.width * 0.28f
     kidBody(spec)
     kidFace(cx, cy, r)
-    // mechón de pelo visible bajo la gorra
-    drawCircle(spec.accentColor, radius = r * 0.9f, center = Offset(cx, cy - r * 0.15f))
+    // mechón de pelo asomando bajo el borde de la gorra, a los lados
+    drawCircle(spec.accentColor, radius = r * 0.16f, center = Offset(cx - r * 0.78f, cy - r * 0.72f))
+    drawCircle(spec.accentColor, radius = r * 0.16f, center = Offset(cx + r * 0.78f, cy - r * 0.72f))
     // gorra
     drawArc(
         color = spec.bodyColor,

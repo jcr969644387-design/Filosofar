@@ -7,7 +7,6 @@ import androidx.room.Query
 import com.educalab.filosofar.data.local.entity.DilemmaAttemptEntity
 import com.educalab.filosofar.data.local.entity.DilemmaEntity
 import com.educalab.filosofar.data.local.entity.DilemmaOptionEntity
-import com.educalab.filosofar.data.local.entity.DilemmaUnlockEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,12 +17,6 @@ interface DilemmaDao {
 
     @Query("SELECT * FROM dilemma WHERE islandId = :islandId ORDER BY orderInIsland ASC")
     suspend fun listByIslandOnce(islandId: String): List<DilemmaEntity>
-
-    @Query("SELECT * FROM dilemma_unlock WHERE islandId = :islandId LIMIT 1")
-    suspend fun getUnlockAnchor(islandId: String): DilemmaUnlockEntity?
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertUnlockAnchor(entity: DilemmaUnlockEntity)
 
     @Query("SELECT DISTINCT dilemmaId FROM dilemma_attempt da JOIN dilemma d ON d.id = da.dilemmaId WHERE d.islandId = :islandId")
     fun observeCompletedInIsland(islandId: String): Flow<List<String>>

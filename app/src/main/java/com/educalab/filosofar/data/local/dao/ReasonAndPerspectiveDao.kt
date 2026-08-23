@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.educalab.filosofar.data.local.entity.PerspectiveAttemptEntity
 import com.educalab.filosofar.data.local.entity.PerspectiveExerciseEntity
-import com.educalab.filosofar.data.local.entity.PerspectiveUnlockEntity
 import com.educalab.filosofar.data.local.entity.ReasonCardEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -32,12 +31,6 @@ interface PerspectiveDao {
 
     @Query("SELECT * FROM perspective_exercise WHERE islandId = :islandId ORDER BY orderInIsland ASC")
     suspend fun listByIslandOnce(islandId: String): List<PerspectiveExerciseEntity>
-
-    @Query("SELECT * FROM perspective_unlock WHERE islandId = :islandId LIMIT 1")
-    suspend fun getUnlockAnchor(islandId: String): PerspectiveUnlockEntity?
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertUnlockAnchor(entity: PerspectiveUnlockEntity)
 
     @Query("SELECT DISTINCT exerciseId FROM perspective_attempt pa JOIN perspective_exercise p ON p.id = pa.exerciseId WHERE p.islandId = :islandId")
     fun observeCompletedInIsland(islandId: String): Flow<List<String>>

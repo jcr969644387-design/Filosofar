@@ -27,7 +27,8 @@ data class SelfDebateEntity(
     val islandId: String,
     val topic: String,
     val sideALabel: String,
-    val sideBLabel: String
+    val sideBLabel: String,
+    val orderInIsland: Int = 0
 )
 
 /** Argumento-ficha predefinido disponible para arrastrar hacia un lado del debate. */

@@ -44,6 +44,7 @@ import com.educalab.filosofar.ui.components.CrystalOfIdeas
 import com.educalab.filosofar.ui.components.IslandThemeIcon
 import com.educalab.filosofar.ui.components.ModuleStatusChip
 import com.educalab.filosofar.ui.components.OceanSkyBackground
+import com.educalab.filosofar.ui.theme.CrystalCyan
 import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
@@ -100,19 +101,31 @@ fun MapScreen(
     }
 }
 
-/** Puente entre dos islas consecutivas: se dibuja marcado y sólido cuando la siguiente isla ya está desbloqueada. */
+/** Puente entre dos islas consecutivas: sólido y brillante cuando la siguiente isla ya está desbloqueada, apenas punteado cuando sigue cerrada. */
 @Composable
 private fun BridgeConnector(unlocked: Boolean) {
-    Box(modifier = Modifier.fillMaxWidth().height(28.dp), contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier.width(6.dp).fillMaxHeight()) {
-            drawLine(
-                color = if (unlocked) Color.White.copy(alpha = 0.55f) else Color.White.copy(alpha = 0.15f),
-                start = Offset(size.width / 2f, 0f),
-                end = Offset(size.width / 2f, size.height),
-                strokeWidth = if (unlocked) 8f else 5f,
-                cap = StrokeCap.Round,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f))
-            )
+    Box(modifier = Modifier.fillMaxWidth().height(30.dp), contentAlignment = Alignment.Center) {
+        if (unlocked) {
+            Canvas(modifier = Modifier.width(10.dp).fillMaxHeight()) {
+                drawLine(
+                    color = CrystalCyan,
+                    start = Offset(size.width / 2f, 0f),
+                    end = Offset(size.width / 2f, size.height),
+                    strokeWidth = size.width,
+                    cap = StrokeCap.Round
+                )
+            }
+        } else {
+            Canvas(modifier = Modifier.width(4.dp).fillMaxHeight()) {
+                drawLine(
+                    color = Color.White.copy(alpha = 0.15f),
+                    start = Offset(size.width / 2f, 0f),
+                    end = Offset(size.width / 2f, size.height),
+                    strokeWidth = size.width,
+                    cap = StrokeCap.Round,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f))
+                )
+            }
         }
     }
 }

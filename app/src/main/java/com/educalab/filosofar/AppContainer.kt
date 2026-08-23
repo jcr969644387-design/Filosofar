@@ -38,11 +38,11 @@ class AppContainer(context: Context) {
     }
 
     val dailyQuestionRepository by lazy { DailyQuestionRepository(database.dailyQuestionDao(), progressRepository) }
-    val dilemmaRepository by lazy { DilemmaRepository(database.dilemmaDao(), progressRepository) }
+    val dilemmaRepository by lazy { DilemmaRepository(database.dilemmaDao(), progressRepository, dailyQuestionRepository) }
     val reasonCardRepository by lazy { ReasonCardRepository(database.reasonCardDao()) }
-    val perspectiveRepository by lazy { PerspectiveRepository(database.perspectiveDao(), progressRepository) }
-    val logicRepository by lazy { LogicRepository(database.logicDao(), progressRepository) }
-    val selfDebateRepository by lazy { SelfDebateRepository(database.selfDebateDao(), progressRepository) }
+    val perspectiveRepository by lazy { PerspectiveRepository(database.perspectiveDao(), progressRepository, dailyQuestionRepository) }
+    val logicRepository by lazy { LogicRepository(database.logicDao(), progressRepository, dailyQuestionRepository) }
+    val selfDebateRepository by lazy { SelfDebateRepository(database.selfDebateDao(), progressRepository, dailyQuestionRepository) }
     val reflectionRepository by lazy { ReflectionRepository(database.reflectionDao(), progressRepository) }
 
     val seeder by lazy { DatabaseSeeder(database) }

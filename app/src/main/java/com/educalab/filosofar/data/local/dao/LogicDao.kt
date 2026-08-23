@@ -15,6 +15,12 @@ interface LogicDao {
     @Query("SELECT * FROM logic_challenge WHERE islandId = :islandId ORDER BY orderInIsland ASC")
     fun observeByIsland(islandId: String): Flow<List<LogicChallengeEntity>>
 
+    @Query("SELECT * FROM logic_challenge WHERE islandId = :islandId ORDER BY orderInIsland ASC")
+    suspend fun listByIslandOnce(islandId: String): List<LogicChallengeEntity>
+
+    @Query("SELECT DISTINCT challengeId FROM logic_attempt la JOIN logic_challenge c ON c.id = la.challengeId WHERE c.islandId = :islandId AND la.wasCorrect = 1")
+    fun observeCompletedInIsland(islandId: String): Flow<List<String>>
+
     @Query("SELECT * FROM logic_challenge WHERE id = :id LIMIT 1")
     suspend fun get(id: String): LogicChallengeEntity?
 

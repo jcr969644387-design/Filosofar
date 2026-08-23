@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.ui.components.AvailableAvatars
 import com.educalab.filosofar.ui.components.AvatarIllustration
@@ -111,7 +112,13 @@ fun ProfileSetupScreen(viewModel: ProfileViewModel, onDone: () -> Unit) {
                             .padding(8.dp)
                     ) {
                         AvatarIllustration(avatar.id, modifier = Modifier.aspectRatio(1f).fillMaxWidth())
-                        Text(avatar.name, style = MaterialTheme.typography.labelMedium, color = TextOnDark, maxLines = 1)
+                        Text(
+                            avatar.name,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextOnDark,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2
+                        )
                     }
                 }
             }
