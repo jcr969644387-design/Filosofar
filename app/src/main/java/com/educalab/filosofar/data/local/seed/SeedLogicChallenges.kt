@@ -4,10 +4,9 @@ import com.educalab.filosofar.data.local.entity.LogicChallengeEntity
 import com.educalab.filosofar.data.local.entity.LogicChallengeItemEntity
 
 /**
- * 18 retos de lógica real (3 por isla): SEQUENCE (ordenar un razonamiento),
- * MATCH (conectar premisas con su conclusión) y SPOT_FLAW (encontrar la
- * pieza que rompe el razonamiento). Alcance reducido y documentado desde
- * los 30 del pliego original.
+ * 24 retos de lógica real (4 por isla): SEQUENCE (ordenar un razonamiento),
+ * MATCH (conectar premisas con su conclusión, x2 por isla) y SPOT_FLAW
+ * (encontrar la pieza que rompe el razonamiento).
  */
 object SeedLogicChallenges {
 
@@ -260,6 +259,90 @@ object SeedLogicChallenges {
                 RawItem("Esa fiesta es diferente a las que tú conoces.", isFlawed = false),
                 RawItem("Por lo tanto, esa fiesta debe de estar mal o ser rara.", isFlawed = true),
                 RawItem("Que algo sea distinto a lo que conocemos no lo hace incorrecto.", isFlawed = false)
+            )
+        ),
+        RawChallenge(
+            "logic_verdad_4", SeedIslands.VERDAD, MATCH,
+            "Conecta cada pista con lo que realmente puedes concluir de ella.",
+            "Una buena conclusión se queda cerca de lo que la pista permite pensar, sin inventar más de la cuenta.",
+            3,
+            listOf(
+                RawItem("Hay un charco en la acera y el cielo está nublado.", pairKey = "p1", role = "PREMISE"),
+                RawItem("Es probable que haya llovido hace poco.", pairKey = "p1", role = "CONCLUSION"),
+                RawItem("Un amigo bosteza varias veces seguidas por la tarde.", pairKey = "p2", role = "PREMISE"),
+                RawItem("Es probable que tenga sueño.", pairKey = "p2", role = "CONCLUSION"),
+                RawItem("Las hojas de un árbol cambian de color.", pairKey = "p3", role = "PREMISE"),
+                RawItem("Es una señal de que las estaciones están cambiando.", pairKey = "p3", role = "CONCLUSION")
+            )
+        ),
+        RawChallenge(
+            "logic_justicia_4", SeedIslands.JUSTICIA, MATCH,
+            "Conecta cada regla con la razón que la hace justa.",
+            "Una regla suele ser justa cuando protege a todos por igual o evita castigar sin motivo real.",
+            3,
+            listOf(
+                RawItem("En una fila, se atiende a quien llegó primero.", pairKey = "p1", role = "PREMISE"),
+                RawItem("Da la misma oportunidad a todos según el orden de llegada.", pairKey = "p1", role = "CONCLUSION"),
+                RawItem("Se explica una norma nueva antes de aplicar sanciones por ella.", pairKey = "p2", role = "PREMISE"),
+                RawItem("Nadie debería ser sancionado por algo que no sabía que existía.", pairKey = "p2", role = "CONCLUSION"),
+                RawItem("Se escuchan las dos versiones antes de decidir quién tiene razón.", pairKey = "p3", role = "PREMISE"),
+                RawItem("Decidir sin escuchar a ambas partes puede ser injusto.", pairKey = "p3", role = "CONCLUSION")
+            )
+        ),
+        RawChallenge(
+            "logic_amistad_4", SeedIslands.AMISTAD, MATCH,
+            "Conecta cada situación con lo que muestra sobre una amistad.",
+            "Las amistades sanas suelen mostrarse en gestos concretos: generosidad, equilibrio y confianza.",
+            3,
+            listOf(
+                RawItem("Un amigo te felicita de verdad cuando ganas algo que él también quería.", pairKey = "p1", role = "PREMISE"),
+                RawItem("Muestra generosidad, no solo compañía.", pairKey = "p1", role = "CONCLUSION"),
+                RawItem("Un amigo te cuenta sus problemas, pero nunca pregunta por los tuyos.", pairKey = "p2", role = "PREMISE"),
+                RawItem("Puede ser una amistad poco equilibrada.", pairKey = "p2", role = "CONCLUSION"),
+                RawItem("Dos amigos pueden estar en silencio juntos sin sentirse incómodos.", pairKey = "p3", role = "PREMISE"),
+                RawItem("Muestra una confianza genuina entre ellos.", pairKey = "p3", role = "CONCLUSION")
+            )
+        ),
+        RawChallenge(
+            "logic_libertad_4", SeedIslands.LIBERTAD, MATCH,
+            "Conecta cada límite con el motivo real que lo justifica.",
+            "Los buenos límites suelen proteger a alguien concreto, no solo prohibir por prohibir.",
+            3,
+            listOf(
+                RawItem("No se permite correr dentro del aula.", pairKey = "p1", role = "PREMISE"),
+                RawItem("Evita accidentes en un espacio pequeño y lleno de gente.", pairKey = "p1", role = "CONCLUSION"),
+                RawItem("Hay una edad mínima recomendada para ciertas películas.", pairKey = "p2", role = "PREMISE"),
+                RawItem("Protege a quienes aún no están listos para ese contenido.", pairKey = "p2", role = "CONCLUSION"),
+                RawItem("Se pide permiso antes de tomar prestado algo de otra persona.", pairKey = "p3", role = "PREMISE"),
+                RawItem("Respeta la decisión del dueño sobre sus propias cosas.", pairKey = "p3", role = "CONCLUSION")
+            )
+        ),
+        RawChallenge(
+            "logic_resp_4", SeedIslands.RESPONSABILIDAD, MATCH,
+            "Conecta cada acción con la forma de responsabilidad que muestra.",
+            "Ser responsable se ve en gestos concretos: avisar, cumplir lo prometido y ayudar sin burlarse.",
+            3,
+            listOf(
+                RawItem("Avisas a un adulto apenas ves que algo se rompió por accidente.", pairKey = "p1", role = "PREMISE"),
+                RawItem("Muestra responsabilidad inmediata, aunque no haya sido a propósito.", pairKey = "p1", role = "CONCLUSION"),
+                RawItem("Prometes ayudar con una tarea y luego se te olvida por completo.", pairKey = "p2", role = "PREMISE"),
+                RawItem("Muestra que cumplir promesas también es parte de ser responsable.", pairKey = "p2", role = "CONCLUSION"),
+                RawItem("Ayudas a un compañero a corregir un error, sin burlarte de él.", pairKey = "p3", role = "PREMISE"),
+                RawItem("Muestra responsabilidad compartida dentro de un grupo.", pairKey = "p3", role = "CONCLUSION")
+            )
+        ),
+        RawChallenge(
+            "logic_conv_4", SeedIslands.CONVIVENCIA, MATCH,
+            "Conecta cada situación con su efecto en la convivencia del grupo.",
+            "Algunas acciones acercan al grupo aunque cuesten un poco de esfuerzo, y otras lo alejan sin que sea la intención.",
+            3,
+            listOf(
+                RawItem("Un grupo decide turnarse para elegir el juego del recreo.", pairKey = "p1", role = "PREMISE"),
+                RawItem("Ayuda a que todos se sientan incluidos con el tiempo.", pairKey = "p1", role = "CONCLUSION"),
+                RawItem("Alguien habla muy alto mientras otros intentan concentrarse.", pairKey = "p2", role = "PREMISE"),
+                RawItem("Puede afectar la convivencia sin que sea su intención.", pairKey = "p2", role = "CONCLUSION"),
+                RawItem("Un compañero traduce lo que dice alguien que habla otro idioma.", pairKey = "p3", role = "PREMISE"),
+                RawItem("Ayuda a que todos puedan participar de la conversación.", pairKey = "p3", role = "CONCLUSION")
             )
         )
     )

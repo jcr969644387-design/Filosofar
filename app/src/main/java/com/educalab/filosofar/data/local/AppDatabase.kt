@@ -69,7 +69,7 @@ import com.educalab.filosofar.data.local.entity.VoiceReflectionMetadataEntity
         BadgeEntity::class,
         UserBadgeEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

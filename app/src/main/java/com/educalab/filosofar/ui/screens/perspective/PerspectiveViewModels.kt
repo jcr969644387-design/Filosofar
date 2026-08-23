@@ -20,6 +20,7 @@ data class PerspectiveDetailUiState(
     val exercise: PerspectiveExercise? = null,
     val chosenRole: String? = null,
     val revealedOther: Boolean = false,
+    val reflectionAnswer: String = "",
     val confirmed: Boolean = false
 )
 
@@ -39,6 +40,7 @@ class PerspectiveDetailViewModel(
                     exercise = exercise,
                     chosenRole = prior.choseRole,
                     revealedOther = true,
+                    reflectionAnswer = prior.reflectionAnswer,
                     confirmed = true
                 )
             } else {
@@ -55,11 +57,15 @@ class PerspectiveDetailViewModel(
         _uiState.value = _uiState.value.copy(revealedOther = true)
     }
 
+    fun updateReflectionAnswer(text: String) {
+        _uiState.value = _uiState.value.copy(reflectionAnswer = text)
+    }
+
     fun confirm() {
         val state = _uiState.value
         val role = state.chosenRole ?: return
         viewModelScope.launch {
-            repository.recordAttempt(exerciseId, role, state.revealedOther)
+            repository.recordAttempt(exerciseId, role, state.revealedOther, state.reflectionAnswer)
             _uiState.value = state.copy(confirmed = true)
         }
     }

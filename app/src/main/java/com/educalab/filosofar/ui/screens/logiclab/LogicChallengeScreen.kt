@@ -3,6 +3,7 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -27,10 +29,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.logic.LogicCheckResult
 import com.educalab.filosofar.domain.model.LogicChallengeType
@@ -48,6 +56,7 @@ import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
 import com.educalab.filosofar.ui.theme.TextOnLight
 import androidx.compose.ui.graphics.Color
+import kotlin.math.roundToInt
 
 private val MatchPairColors = listOf(CrystalCyan, LumiYellow, CoralAccent, IslandJustice, IslandFriendship, NoxIndigo)
 
@@ -133,14 +142,21 @@ private fun ResultBanner(result: LogicCheckResult?, explanation: String) {
 @Composable
 private fun SequenceInteraction(state: LogicChallengeUiState, viewModel: LogicChallengeViewModel) {
     Column {
-        Text("Toca las piezas en el orden correcto:", color = TextOnDarkMuted, style = MaterialTheme.typography.labelLarge)
+        Text("Toca piezas para añadirlas y arrástralas para reordenarlas:", color = TextOnDarkMuted, style = MaterialTheme.typography.labelLarge)
         Spacer(modifier = Modifier.height(8.dp))
         Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SurfaceCard.copy(alpha = 0.15f)).padding(10.dp)) {
             if (state.placedOrder.isEmpty()) {
                 Text("(vacío)", color = TextOnDarkMuted, modifier = Modifier.padding(8.dp))
             }
             state.placedOrder.forEachIndexed { i, item ->
-                Text("${i + 1}. ${item.text}", color = TextOnDark, modifier = Modifier.padding(6.dp))
+                ReorderableSequenceRow(
+                    text = "${i + 1}. ${item.text}",
+                    enabled = !state.checked,
+                    canMoveUp = i > 0,
+                    canMoveDown = i < state.placedOrder.lastIndex,
+                    onMoveUp = { viewModel.moveSequenceItem(i, i - 1) },
+                    onMoveDown = { viewModel.moveSequenceItem(i, i + 1) }
+                )
             }
         }
         if (state.placedOrder.isNotEmpty() && !state.checked) {
@@ -154,6 +170,56 @@ private fun SequenceInteraction(state: LogicChallengeUiState, viewModel: LogicCh
                 LogicItemCard(item.text) { viewModel.tapSequenceItem(item) }
             }
         }
+    }
+}
+
+/** Fila de la secuencia ordenada: se arrastra verticalmente y, al pasar el 60% de su alto, intercambia lugar con la vecina. */
+@Composable
+private fun ReorderableSequenceRow(
+    text: String,
+    enabled: Boolean,
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit
+) {
+    var dragOffsetY by remember { mutableFloatStateOf(0f) }
+    var rowHeightPx by remember { mutableFloatStateOf(0f) }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { coords -> rowHeightPx = coords.size.height.toFloat() }
+            .offset { IntOffset(0, dragOffsetY.roundToInt()) }
+            .pointerInput(enabled, canMoveUp, canMoveDown) {
+                if (!enabled) return@pointerInput
+                detectDragGestures(
+                    onDragEnd = { dragOffsetY = 0f },
+                    onDragCancel = { dragOffsetY = 0f }
+                ) { change, dragAmount ->
+                    change.consume()
+                    dragOffsetY += dragAmount.y
+                    val threshold = rowHeightPx * 0.6f
+                    if (threshold > 0f) {
+                        if (dragOffsetY > threshold && canMoveDown) {
+                            onMoveDown()
+                            dragOffsetY = 0f
+                        } else if (dragOffsetY < -threshold && canMoveUp) {
+                            onMoveUp()
+                            dragOffsetY = 0f
+                        }
+                    }
+                }
+            }
+    ) {
+        Text(
+            text,
+            color = TextOnDark,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(if (dragOffsetY != 0f) CrystalCyan.copy(alpha = 0.20f) else Color.Transparent)
+                .padding(6.dp)
+        )
     }
 }
 

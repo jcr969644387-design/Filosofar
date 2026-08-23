@@ -87,6 +87,7 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
                     OptionCard(
                         option = option,
                         selected = state.selectedOptionId == option.id,
+                        completed = state.confirmed,
                         enabled = !state.confirmed,
                         onClick = { viewModel.selectOption(option.id) }
                     )
@@ -152,17 +153,22 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
 }
 
 @Composable
-private fun OptionCard(option: DilemmaOption, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
+private fun OptionCard(option: DilemmaOption, selected: Boolean, completed: Boolean, enabled: Boolean, onClick: () -> Unit) {
+    val highlight = selected && completed
+    val accent = if (highlight) SuccessGreen else CrystalCyan
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(if (selected) CrystalCyan.copy(alpha = 0.18f) else SurfaceCard.copy(alpha = 0.15f))
-            .border(width = if (selected) 2.dp else 0.dp, color = CrystalCyan, shape = RoundedCornerShape(16.dp))
+            .background(if (selected) accent.copy(alpha = if (highlight) 0.26f else 0.18f) else SurfaceCard.copy(alpha = 0.15f))
+            .border(width = if (selected) 2.dp else 0.dp, color = accent, shape = RoundedCornerShape(16.dp))
             .clickable(enabled = enabled, onClick = onClick)
             .padding(14.dp)
     ) {
-        Text(option.label, style = MaterialTheme.typography.titleMedium, color = TextOnDark, fontWeight = FontWeight.SemiBold)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(option.label, style = MaterialTheme.typography.titleMedium, color = TextOnDark, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            if (highlight) Text("✓", color = SuccessGreen, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+        }
     }
 }
 

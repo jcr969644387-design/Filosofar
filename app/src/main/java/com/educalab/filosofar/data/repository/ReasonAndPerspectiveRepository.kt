@@ -28,12 +28,13 @@ class PerspectiveRepository(
 
     suspend fun latestAttempt(exerciseId: String): PerspectiveAttemptEntity? = dao.latestAttemptFor(exerciseId)
 
-    suspend fun recordAttempt(exerciseId: String, choseRole: String, revealedOtherRole: Boolean) {
+    suspend fun recordAttempt(exerciseId: String, choseRole: String, revealedOtherRole: Boolean, reflectionAnswer: String) {
         dao.insertAttempt(
             PerspectiveAttemptEntity(
                 exerciseId = exerciseId,
                 choseRole = choseRole,
                 revealedOtherRole = revealedOtherRole,
+                reflectionAnswer = reflectionAnswer.trim(),
                 attemptedAtEpochMs = System.currentTimeMillis()
             )
         )

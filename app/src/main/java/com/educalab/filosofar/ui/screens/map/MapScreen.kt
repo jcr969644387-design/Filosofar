@@ -1,24 +1,24 @@
-﻿package com.educalab.filosofar.ui.screens.map
+package com.educalab.filosofar.ui.screens.map
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,9 +27,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.domain.model.Island
 import com.educalab.filosofar.domain.model.IslandProgress
@@ -43,17 +43,6 @@ import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
 import com.educalab.filosofar.ui.theme.TextOnLight
-
-// Posiciones relativas (0..1) de cada isla dentro del lienzo del mapa, para
-// que se sientan como un archipiélago disperso y no como una lista/grid.
-private val islandLayout = mapOf(
-    "isla_verdad" to Offset(0.22f, 0.10f),
-    "isla_justicia" to Offset(0.68f, 0.22f),
-    "isla_amistad" to Offset(0.18f, 0.36f),
-    "isla_libertad" to Offset(0.62f, 0.50f),
-    "isla_responsabilidad" to Offset(0.25f, 0.64f),
-    "isla_convivencia" to Offset(0.60f, 0.78f)
-)
 
 @Composable
 fun MapScreen(
@@ -72,40 +61,29 @@ fun MapScreen(
         Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             MapTopBar(state, onOpenProgress, onOpenSettings)
 
-            androidx.compose.foundation.layout.BoxWithConstraints(
+            Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val nodeSize = maxWidth * 0.4f
-
-                // trazo de ruta punteada conectando las islas en orden
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val ordered = state.islands.sortedBy { it.first.sortOrder }
-                    for (i in 0 until ordered.size - 1) {
-                        val a = islandLayout[ordered[i].first.id] ?: continue
-                        val b = islandLayout[ordered[i + 1].first.id] ?: continue
-                        drawLine(
-                            color = Color.White.copy(alpha = 0.25f),
-                            start = Offset(a.x * size.width + size.width * 0.08f, a.y * size.height + size.width * 0.08f),
-                            end = Offset(b.x * size.width + size.width * 0.08f, b.y * size.height + size.width * 0.08f),
-                            strokeWidth = 5f,
-                            pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(14f, 14f))
+                val ordered = state.islands.sortedBy { it.first.sortOrder }
+                ordered.forEachIndexed { index, pair ->
+                    val (island, progress) = pair
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                        horizontalArrangement = if (index % 2 == 0) Arrangement.Start else Arrangement.End
+                    ) {
+                        IslandNode(
+                            island = island,
+                            progress = progress,
+                            modifier = Modifier.size(112.dp),
+                            onClick = { if (progress.status != ModuleStatus.LOCKED) onOpenIsland(island.id) }
                         )
                     }
-                }
-
-                state.islands.forEach { (island, progress) ->
-                    val pos = islandLayout[island.id] ?: Offset(0.3f, 0.3f)
-                    IslandNode(
-                        island = island,
-                        progress = progress,
-                        modifier = Modifier
-                            .offset(x = maxWidth * pos.x, y = maxHeight * pos.y)
-                            .size(nodeSize),
-                        onClick = { if (progress.status != ModuleStatus.LOCKED) onOpenIsland(island.id) }
-                    )
                 }
             }
 
@@ -126,7 +104,7 @@ private fun IslandNode(island: Island, progress: IslandProgress, modifier: Modif
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(24.dp))
-            .background(if (locked) Color.White.copy(alpha = 0.06f) else islandColor.copy(alpha = 0.22f))
+            .background(if (locked) Color.White.copy(alpha = 0.08f) else islandColor.copy(alpha = 0.28f))
             .clickable(enabled = !locked, onClick = onClick)
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -203,19 +181,44 @@ private fun BottomQuickBar(onOpenJournal: () -> Unit, onOpenProgress: () -> Unit
         modifier = Modifier
             .fillMaxWidth()
             .background(SurfaceCard.copy(alpha = 0.16f))
-            .padding(horizontal = 20.dp, vertical = 14.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        QuickBarItem("📓", "Cuaderno de Ideas", onOpenJournal)
-        QuickBarItem("🦋", "Antes / Ahora", onOpenOpinionRevision)
-        QuickBarItem("🏆", "Progreso y Colección", onOpenProgress)
+        QuickBarItem("📓", "Cuaderno de Ideas", onOpenJournal, modifier = Modifier.weight(1f))
+        QuickBarDivider()
+        QuickBarItem("🦋", "Antes / Ahora", onOpenOpinionRevision, modifier = Modifier.weight(1f))
+        QuickBarDivider()
+        QuickBarItem("🏆", "Progreso y Colección", onOpenProgress, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-private fun QuickBarItem(glyph: String, label: String, onClick: () -> Unit) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable(onClick = onClick)) {
+private fun QuickBarDivider() {
+    Box(
+        modifier = Modifier
+            .width(1.dp)
+            .height(42.dp)
+            .background(TextOnDarkMuted.copy(alpha = 0.3f))
+    )
+}
+
+@Composable
+private fun QuickBarItem(glyph: String, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .clip(RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 6.dp, horizontal = 4.dp)
+    ) {
         Text(glyph, style = MaterialTheme.typography.headlineMedium)
-        Text(label, style = MaterialTheme.typography.labelMedium, color = TextOnDark)
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = TextOnDark,
+            textAlign = TextAlign.Center,
+            maxLines = 2
+        )
     }
 }

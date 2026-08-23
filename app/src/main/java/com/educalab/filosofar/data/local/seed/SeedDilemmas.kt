@@ -4,8 +4,7 @@ import com.educalab.filosofar.data.local.entity.DilemmaEntity
 import com.educalab.filosofar.data.local.entity.DilemmaOptionEntity
 
 /**
- * 12 dilemas (2 por isla), cada uno con 3 opciones. Alcance reducido y
- * documentado desde los 30 del pliego original (ver BUILD_REPORT.md).
+ * 18 dilemas (3 por isla), cada uno con 3 opciones.
  */
 object SeedDilemmas {
 
@@ -128,6 +127,66 @@ object SeedDilemmas {
                 RawOption("Me río también para no destacar", "Encajas con el grupo, pero él se siente peor.", "Lumi piensa: reírse de algo distinto no lo hace gracioso, solo lo hace doler.", "Nox piensa: a veces reímos por nervios, sin pensar bien en el efecto que tiene."),
                 RawOption("Me siento con él y le pregunto sobre su comida", "Puede sentirse raro al principio, pero él se siente acompañado.", "Lumi piensa: interesarte de verdad por lo distinto es la mejor forma de entenderlo.", "Nox piensa: no siempre es fácil acercarte a alguien nuevo, aunque quieras hacerlo."),
                 RawOption("No me río, pero tampoco digo nada", "No participas en la burla, aunque tampoco la frenas.", "Lumi piensa: no burlarse ya es un paso, aunque se puede hacer más.", "Nox piensa: quedarse en silencio a veces es todo lo que te atreves a hacer, y no pasa nada.")
+            )
+        ),
+        RawDilemma(
+            "dil_verdad_3", SeedIslands.VERDAD, "El video increíble",
+            "Ves un video con muchísimos 'me gusta' donde alguien asegura algo casi imposible, pero no explica cómo lo comprobó.",
+            2,
+            listOf(
+                RawOption("Lo creo porque tiene muchos 'me gusta'", "Que algo sea popular no significa que sea cierto.", "Lumi piensa: la cantidad de gente que cree algo no lo convierte en verdad.", "Nox piensa: es normal confiar rápido cuando algo parece que todos lo aceptan."),
+                RawOption("Busco si alguien más lo explica o lo comprueba", "Tardas un poco más, pero te acercas mejor a la verdad.", "Lumi piensa: comprobar antes de creer es cuidar la verdad.", "Nox piensa: no siempre es fácil encontrar quién lo confirme o lo desmienta."),
+                RawOption("No lo creo ni lo comparto porque suena imposible", "Evitas repetir algo dudoso, aunque tal vez no investigues más.", "Lumi piensa: dudar de algo extraño es un buen primer paso.", "Nox piensa: descartarlo sin mirar tampoco es investigar de verdad.")
+            )
+        ),
+        RawDilemma(
+            "dil_justicia_3", SeedIslands.JUSTICIA, "La fila del recreo",
+            "Hay una sola pelota para jugar y varios compañeros la piden a la vez; uno de ellos casi nunca ha podido jugar en toda la semana.",
+            2,
+            listOf(
+                RawOption("Se la doy a quien llegó primero a pedirla", "Es una regla simple y fácil de aplicar siempre.", "Lumi piensa: una regla igual para todos evita peleas.", "Nox piensa: llegar primero no siempre refleja quién más lo necesita."),
+                RawOption("Se la doy a quien casi no ha podido jugar esta semana", "Reconoces una necesidad real, aunque no sea 'lo más justo' para los demás.", "Lumi piensa: a veces ser justo es fijarte en quién lo necesita más.", "Nox piensa: los demás también tienen ganas de jugar y podrían sentirlo injusto."),
+                RawOption("Proponemos turnos para que todos jueguen un rato", "Se tarda un poco en organizar, pero nadie se queda sin jugar.", "Lumi piensa: organizar turnos piensa en todos a la vez, no solo en uno.", "Nox piensa: turnarse funciona mejor cuando el grupo está dispuesto a esperar.")
+            )
+        ),
+        RawDilemma(
+            "dil_amistad_3", SeedIslands.AMISTAD, "El cumpleaños con dos planes",
+            "Te invitan el mismo día a dos cumpleaños: el de tu mejor amigo y el de un compañero nuevo que quiere conocerte mejor.",
+            2,
+            listOf(
+                RawOption("Voy solo al de mi mejor amigo", "Cuidas una amistad de siempre, aunque el compañero nuevo se sienta dejado de lado.", "Lumi piensa: las amistades de mucho tiempo también merecen prioridad a veces.", "Nox piensa: el compañero nuevo puede sentir que no le diste una oportunidad."),
+                RawOption("Voy un rato a cada uno de los dos", "Te esfuerzas por estar en ambos, aunque no disfrutes ninguno con calma.", "Lumi piensa: intentar estar en los dos muestra que te importan ambas personas.", "Nox piensa: repartirte puede hacer que ninguna de las dos fiestas se sienta completa."),
+                RawOption("Hablo con ambos con sinceridad sobre lo que puedo hacer", "Es incómodo explicarlo, pero los dos entienden tu situación real.", "Lumi piensa: ser sincero sobre un límite es mejor que desaparecer sin explicar.", "Nox piensa: aun explicándolo bien, alguno de los dos puede sentirse un poco triste igual.")
+            )
+        ),
+        RawDilemma(
+            "dil_libertad_3", SeedIslands.LIBERTAD, "El videojuego nuevo",
+            "Tus papás te dejan elegir cuánto tiempo juegas videojuegos entre semana, pero notas que cada día te cuesta más dejar de jugar.",
+            2,
+            listOf(
+                RawOption("Sigo jugando el tiempo que yo decida cada día", "Disfrutas la libertad ahora, pero puede afectarte en otras cosas.", "Lumi piensa: elegir libremente también significa notar cuándo algo empieza a costarte controlar.", "Nox piensa: no es fácil darte cuenta tú solo de cuándo algo se te está yendo de las manos."),
+                RawOption("Me pongo yo mismo un límite de tiempo antes de empezar", "Te cuesta al principio, pero mantienes el control sobre tu propio tiempo.", "Lumi piensa: poner tus propios límites es una forma madura de ser libre.", "Nox piensa: cumplir un límite que tú mismo pusiste puede ser más difícil de lo que parece."),
+                RawOption("Le pido a un adulto que me ayude a poner un límite", "Compartes la decisión, y te resulta más fácil sostenerla.", "Lumi piensa: pedir ayuda para cuidarte no te quita libertad, te la protege.", "Nox piensa: puede sentirse raro pedir ayuda para algo que crees que deberías controlar solo.")
+            )
+        ),
+        RawDilemma(
+            "dil_resp_3", SeedIslands.RESPONSABILIDAD, "El experimento arruinado",
+            "En el laboratorio de ciencias, tu grupo pierde datos de un experimento porque tú tocaste algo sin darte cuenta de que no debías.",
+            2,
+            listOf(
+                RawOption("No digo nada y dejo que crean que fue un fallo del material", "Evitas el momento incómodo, pero tu grupo no sabe la verdadera causa.", "Lumi piensa: entender qué pasó de verdad ayuda a que no vuelva a ocurrir.", "Nox piensa: admitirlo enseguida puede dar mucho miedo o vergüenza."),
+                RawOption("Explico lo que pasó y ofrezco ayudar a repetir el experimento", "Cuesta un poco al principio, pero el grupo entiende y avanza junto contigo.", "Lumi piensa: reconocer el error y ofrecer ayuda es hacerte cargo de verdad.", "Nox piensa: contarlo no borra el tiempo perdido, aunque sí repare la confianza."),
+                RawOption("Le cuento solo a un integrante del grupo, en privado", "Compartes el peso con alguien, pero el resto del grupo sigue sin saberlo.", "Lumi piensa: contarlo a alguien ya es un paso, aunque no sea a todos todavía.", "Nox piensa: tarde o temprano el grupo entero necesitará saber qué pasó realmente.")
+            )
+        ),
+        RawDilemma(
+            "dil_conv_3", SeedIslands.CONVIVENCIA, "El equipo mezclado",
+            "El profe forma equipos mezclando a propósito a niños que casi nunca se juntan entre sí, y a algunos no les gusta la idea.",
+            2,
+            listOf(
+                RawOption("Me quejo para que nos deje elegir a nuestros amigos", "Puede que lo consiga, pero pierdes la oportunidad de conocer a otros compañeros.", "Lumi piensa: quedarte siempre con quien ya conoces no te ayuda a convivir con más gente.", "Nox piensa: es normal sentirte más cómodo con quienes ya conoces bien."),
+                RawOption("Acepto el equipo y trato de conocer mejor a los demás", "Al principio se siente raro, pero puedes descubrir cosas nuevas del grupo.", "Lumi piensa: convivir con quien no elegiste también enseña a colaborar de verdad.", "Nox piensa: no siempre es fácil ni cómodo trabajar con quien casi no conoces."),
+                RawOption("Acepto el equipo, pero casi no participo con ellos", "Evitas el conflicto, pero tampoco aprovechas la oportunidad de conocerlos.", "Lumi piensa: estar presente sin participar deja pasar la oportunidad de convivir mejor.", "Nox piensa: a veces cuesta abrirse de golpe con un grupo nuevo, y eso también es válido.")
             )
         ),
         RawDilemma(

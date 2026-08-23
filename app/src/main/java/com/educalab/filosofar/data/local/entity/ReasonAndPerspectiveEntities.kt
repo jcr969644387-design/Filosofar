@@ -46,5 +46,6 @@ data class PerspectiveAttemptEntity(
     val exerciseId: String,
     val choseRole: String,
     val revealedOtherRole: Boolean,
+    val reflectionAnswer: String = "",
     val attemptedAtEpochMs: Long
 )

@@ -111,6 +111,17 @@ class LogicChallengeViewModel(
         _uiState.value = s.copy(placedOrder = s.placedOrder.dropLast(1))
     }
 
+    fun moveSequenceItem(fromIndex: Int, toIndex: Int) {
+        val s = _uiState.value
+        if (s.checked) return
+        val list = s.placedOrder
+        if (fromIndex !in list.indices || toIndex !in list.indices) return
+        val mutable = list.toMutableList()
+        val item = mutable.removeAt(fromIndex)
+        mutable.add(toIndex, item)
+        _uiState.value = s.copy(placedOrder = mutable)
+    }
+
     // --- MATCH ---
     fun tapPremise(id: String) {
         val s = _uiState.value
