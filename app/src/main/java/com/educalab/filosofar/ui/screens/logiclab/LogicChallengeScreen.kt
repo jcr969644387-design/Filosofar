@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.logiclab
+﻿package com.educalab.filosofar.ui.screens.logiclab
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,11 +38,18 @@ import com.educalab.filosofar.domain.model.LogicItem
 import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CoralAccent
 import com.educalab.filosofar.ui.theme.CrystalCyan
+import com.educalab.filosofar.ui.theme.IslandFriendship
+import com.educalab.filosofar.ui.theme.IslandJustice
+import com.educalab.filosofar.ui.theme.LumiYellow
+import com.educalab.filosofar.ui.theme.NoxIndigo
 import com.educalab.filosofar.ui.theme.SuccessGreen
 import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
 import com.educalab.filosofar.ui.theme.TextOnLight
+import androidx.compose.ui.graphics.Color
+
+private val MatchPairColors = listOf(CrystalCyan, LumiYellow, CoralAccent, IslandJustice, IslandFriendship, NoxIndigo)
 
 @Composable
 fun LogicChallengeScreen(viewModel: LogicChallengeViewModel, onBack: () -> Unit) {
@@ -48,7 +58,7 @@ fun LogicChallengeScreen(viewModel: LogicChallengeViewModel, onBack: () -> Unit)
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Text("←", color = TextOnDark, style = MaterialTheme.typography.headlineMedium) }
                 Text("Laboratorio de Lógica", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
@@ -125,7 +135,7 @@ private fun SequenceInteraction(state: LogicChallengeUiState, viewModel: LogicCh
     Column {
         Text("Toca las piezas en el orden correcto:", color = TextOnDarkMuted, style = MaterialTheme.typography.labelLarge)
         Spacer(modifier = Modifier.height(8.dp))
-        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SurfaceCard.copy(alpha = 0.08f)).padding(10.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SurfaceCard.copy(alpha = 0.15f)).padding(10.dp)) {
             if (state.placedOrder.isEmpty()) {
                 Text("(vacío)", color = TextOnDarkMuted, modifier = Modifier.padding(8.dp))
             }
@@ -149,25 +159,57 @@ private fun SequenceInteraction(state: LogicChallengeUiState, viewModel: LogicCh
 
 @Composable
 private fun MatchInteraction(state: LogicChallengeUiState, viewModel: LogicChallengeViewModel) {
+    val pairOrder = state.matchedPairs.keys.toList()
     Column {
-        Text("Toca una premisa y luego su conclusión:", color = TextOnDarkMuted, style = MaterialTheme.typography.labelLarge)
+        Text("Toca una premisa, luego su conclusión y pulsa Conectar:", color = TextOnDarkMuted, style = MaterialTheme.typography.labelLarge)
         Spacer(modifier = Modifier.height(8.dp))
         Row(modifier = Modifier.weight(1f, fill = false)) {
             Column(modifier = Modifier.weight(1f)) {
                 state.premises.forEach { p ->
-                    val matched = state.matchedPairs.containsKey(p.id)
-                    val selected = state.selectedPremiseId == p.id
-                    LogicItemCard(p.text, matched = matched, selected = selected) { viewModel.tapPremise(p.id) }
+                    val pairIndex = pairOrder.indexOf(p.id)
+                    val matched = pairIndex >= 0
+                    val pending = state.selectedPremiseId == p.id
+                    LogicItemCard(
+                        p.text,
+                        matched = matched,
+                        selected = pending,
+                        pairColor = if (matched) MatchPairColors[pairIndex % MatchPairColors.size] else null
+                    ) { viewModel.tapPremise(p.id) }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
             Spacer(modifier = Modifier.padding(4.dp))
             Column(modifier = Modifier.weight(1f)) {
                 state.conclusionsShuffled.forEach { c ->
-                    val matched = state.matchedPairs.containsValue(c.id)
-                    LogicItemCard(c.text, matched = matched) { viewModel.tapConclusion(c.id) }
+                    val pairIndex = state.matchedPairs.entries.indexOfFirst { it.value == c.id }
+                    val matched = pairIndex >= 0
+                    val pending = state.pendingConclusionId == c.id
+                    LogicItemCard(
+                        c.text,
+                        matched = matched,
+                        selected = pending,
+                        pairColor = if (matched) MatchPairColors[pairIndex % MatchPairColors.size] else null
+                    ) { viewModel.tapConclusion(c.id) }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+            }
+        }
+        if (state.lastConnectionWrong) {
+            Text(
+                "Esa conexión no es correcta, inténtalo con otra 🤔",
+                color = CoralAccent,
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+        if (state.selectedPremiseId != null && state.pendingConclusionId != null && !state.checked) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                onClick = viewModel::confirmPendingMatch,
+                modifier = Modifier.fillMaxWidth().height(46.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = CrystalCyan)
+            ) {
+                Text("Conectar", fontWeight = FontWeight.Bold, color = TextOnLight)
             }
         }
     }
@@ -188,19 +230,21 @@ private fun SpotFlawInteraction(state: LogicChallengeUiState, viewModel: LogicCh
 }
 
 @Composable
-private fun LogicItemCard(text: String, matched: Boolean = false, selected: Boolean = false, onClick: () -> Unit) {
+private fun LogicItemCard(text: String, matched: Boolean = false, selected: Boolean = false, pairColor: Color? = null, onClick: () -> Unit) {
+    val borderColor = pairColor ?: CrystalCyan
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(
                 when {
+                    pairColor != null -> pairColor.copy(alpha = 0.22f)
                     matched -> SuccessGreen.copy(alpha = 0.18f)
                     selected -> CrystalCyan.copy(alpha = 0.22f)
-                    else -> SurfaceCard.copy(alpha = 0.08f)
+                    else -> SurfaceCard.copy(alpha = 0.15f)
                 }
             )
-            .border(width = if (selected) 2.dp else 0.dp, color = CrystalCyan, shape = RoundedCornerShape(12.dp))
+            .border(width = if (selected || matched) 2.dp else 0.dp, color = borderColor, shape = RoundedCornerShape(12.dp))
             .clickable(enabled = !matched, onClick = onClick)
             .padding(12.dp)
     ) {

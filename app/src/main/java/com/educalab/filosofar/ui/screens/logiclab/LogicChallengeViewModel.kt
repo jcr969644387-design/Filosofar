@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 
 data class LogicChallengeUiState(
     val challenge: LogicChallenge? = null,
+    val alreadySolved: Boolean = false,
     // SEQUENCE
     val sequencePool: List<LogicItem> = emptyList(),
     val placedOrder: List<LogicItem> = emptyList(),
@@ -22,6 +23,8 @@ data class LogicChallengeUiState(
     val premises: List<LogicItem> = emptyList(),
     val conclusionsShuffled: List<LogicItem> = emptyList(),
     val selectedPremiseId: String? = null,
+    val pendingConclusionId: String? = null,
+    val lastConnectionWrong: Boolean = false,
     val matchedPairs: Map<String, String> = emptyMap(),
     // SPOT_FLAW
     val selectedFlawId: String? = null,
@@ -42,14 +45,55 @@ class LogicChallengeViewModel(
     init {
         viewModelScope.launch {
             val challenge = repository.getFull(challengeId) ?: return@launch
-            when (challenge.type) {
-                LogicChallengeType.SEQUENCE -> _uiState.value = LogicChallengeUiState(challenge = challenge, sequencePool = challenge.items.shuffled())
-                LogicChallengeType.MATCH -> _uiState.value = LogicChallengeUiState(
-                    challenge = challenge,
-                    premises = challenge.items.filter { it.role == "PREMISE" },
-                    conclusionsShuffled = challenge.items.filter { it.role == "CONCLUSION" }.shuffled()
-                )
-                LogicChallengeType.SPOT_FLAW -> _uiState.value = LogicChallengeUiState(challenge = challenge)
+            val solvedBefore = repository.wasSolved(challengeId)
+            _uiState.value = when (challenge.type) {
+                LogicChallengeType.SEQUENCE -> {
+                    val correctOrder = challenge.items.sortedBy { it.correctPosition }
+                    if (solvedBefore) {
+                        LogicChallengeUiState(
+                            challenge = challenge,
+                            alreadySolved = true,
+                            sequencePool = correctOrder,
+                            placedOrder = correctOrder,
+                            checked = true,
+                            result = LogicChallengeEngine.checkSequence(challenge, correctOrder.map { it.id })
+                        )
+                    } else {
+                        LogicChallengeUiState(challenge = challenge, sequencePool = challenge.items.shuffled())
+                    }
+                }
+                LogicChallengeType.MATCH -> {
+                    val premises = challenge.items.filter { it.role == "PREMISE" }
+                    val conclusions = challenge.items.filter { it.role == "CONCLUSION" }
+                    if (solvedBefore) {
+                        val correctPairs = premises.associate { p -> p.id to conclusions.first { it.pairKey == p.pairKey }.id }
+                        LogicChallengeUiState(
+                            challenge = challenge,
+                            alreadySolved = true,
+                            premises = premises,
+                            conclusionsShuffled = conclusions,
+                            matchedPairs = correctPairs,
+                            checked = true,
+                            result = LogicChallengeEngine.checkMatch(challenge, correctPairs)
+                        )
+                    } else {
+                        LogicChallengeUiState(challenge = challenge, premises = premises, conclusionsShuffled = conclusions.shuffled())
+                    }
+                }
+                LogicChallengeType.SPOT_FLAW -> {
+                    if (solvedBefore) {
+                        val flawedId = challenge.items.first { it.isFlawed }.id
+                        LogicChallengeUiState(
+                            challenge = challenge,
+                            alreadySolved = true,
+                            selectedFlawId = flawedId,
+                            checked = true,
+                            result = LogicChallengeEngine.checkSpotFlaw(challenge, flawedId)
+                        )
+                    } else {
+                        LogicChallengeUiState(challenge = challenge)
+                    }
+                }
             }
         }
     }
@@ -71,14 +115,33 @@ class LogicChallengeViewModel(
     fun tapPremise(id: String) {
         val s = _uiState.value
         if (s.checked || s.matchedPairs.containsKey(id)) return
-        _uiState.value = s.copy(selectedPremiseId = id)
+        _uiState.value = s.copy(selectedPremiseId = id, pendingConclusionId = null, lastConnectionWrong = false)
     }
 
     fun tapConclusion(id: String) {
         val s = _uiState.value
+        if (s.checked || s.selectedPremiseId == null || s.matchedPairs.containsValue(id)) return
+        _uiState.value = s.copy(pendingConclusionId = id, lastConnectionWrong = false)
+    }
+
+    /** Confirma la conexión pendiente: solo se guarda si premisa y conclusión comparten pairKey. */
+    fun confirmPendingMatch() {
+        val s = _uiState.value
         val premiseId = s.selectedPremiseId ?: return
-        if (s.checked) return
-        _uiState.value = s.copy(matchedPairs = s.matchedPairs + (premiseId to id), selectedPremiseId = null)
+        val conclusionId = s.pendingConclusionId ?: return
+        val premise = s.premises.firstOrNull { it.id == premiseId } ?: return
+        val conclusion = s.conclusionsShuffled.firstOrNull { it.id == conclusionId } ?: return
+        val isCorrect = premise.pairKey.isNotEmpty() && premise.pairKey == conclusion.pairKey
+        _uiState.value = if (isCorrect) {
+            s.copy(
+                matchedPairs = s.matchedPairs + (premiseId to conclusionId),
+                selectedPremiseId = null,
+                pendingConclusionId = null,
+                lastConnectionWrong = false
+            )
+        } else {
+            s.copy(selectedPremiseId = null, pendingConclusionId = null, lastConnectionWrong = true)
+        }
     }
 
     // --- SPOT_FLAW ---
@@ -120,7 +183,7 @@ class LogicChallengeViewModel(
         val challenge = s.challenge ?: return
         _uiState.value = when (challenge.type) {
             LogicChallengeType.SEQUENCE -> s.copy(placedOrder = emptyList(), checked = false, result = null)
-            LogicChallengeType.MATCH -> s.copy(matchedPairs = emptyMap(), selectedPremiseId = null, checked = false, result = null)
+            LogicChallengeType.MATCH -> s.copy(matchedPairs = emptyMap(), selectedPremiseId = null, pendingConclusionId = null, lastConnectionWrong = false, checked = false, result = null)
             LogicChallengeType.SPOT_FLAW -> s.copy(selectedFlawId = null, checked = false, result = null)
         }
     }

@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.dilemmas
+﻿package com.educalab.filosofar.ui.screens.dilemmas
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +45,7 @@ import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CrystalCyan
 import com.educalab.filosofar.ui.theme.LumiYellow
 import com.educalab.filosofar.ui.theme.NoxIndigo
+import com.educalab.filosofar.ui.theme.SuccessGreen
 import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
@@ -55,7 +59,7 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Text("←", color = TextOnDark, style = MaterialTheme.typography.headlineMedium) }
                 Text(dilemma.title, style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
@@ -63,6 +67,19 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
 
             LazyColumn(contentPadding = androidx.compose.foundation.layout.PaddingValues(20.dp)) {
                 item {
+                    if (state.confirmed) {
+                        Text(
+                            "✓ Completado",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = TextOnLight,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50))
+                                .background(SuccessGreen)
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
                     Text(dilemma.scenario, style = MaterialTheme.typography.bodyLarge, color = TextOnDark)
                     Spacer(modifier = Modifier.height(20.dp))
                 }
@@ -70,6 +87,7 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
                     OptionCard(
                         option = option,
                         selected = state.selectedOptionId == option.id,
+                        enabled = !state.confirmed,
                         onClick = { viewModel.selectOption(option.id) }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
@@ -88,7 +106,7 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(14.dp))
-                                        .background(SurfaceCard.copy(alpha = 0.08f))
+                                        .background(SurfaceCard.copy(alpha = 0.15f))
                                         .padding(12.dp)
                                 )
                                 Spacer(modifier = Modifier.height(14.dp))
@@ -134,14 +152,14 @@ fun DilemmaDetailScreen(viewModel: DilemmaDetailViewModel, onBack: () -> Unit, o
 }
 
 @Composable
-private fun OptionCard(option: DilemmaOption, selected: Boolean, onClick: () -> Unit) {
+private fun OptionCard(option: DilemmaOption, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(if (selected) CrystalCyan.copy(alpha = 0.18f) else SurfaceCard.copy(alpha = 0.08f))
+            .background(if (selected) CrystalCyan.copy(alpha = 0.18f) else SurfaceCard.copy(alpha = 0.15f))
             .border(width = if (selected) 2.dp else 0.dp, color = CrystalCyan, shape = RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .padding(14.dp)
     ) {
         Text(option.label, style = MaterialTheme.typography.titleMedium, color = TextOnDark, fontWeight = FontWeight.SemiBold)

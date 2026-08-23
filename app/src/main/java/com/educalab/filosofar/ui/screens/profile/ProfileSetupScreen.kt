@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.profile
+﻿package com.educalab.filosofar.ui.screens.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -50,6 +53,7 @@ fun ProfileSetupScreen(viewModel: ProfileViewModel, onDone: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(24.dp)
         ) {
             Text("Crea tu perfil de pensador", style = MaterialTheme.typography.headlineMedium, color = TextOnDark, fontWeight = FontWeight.ExtraBold)
@@ -96,7 +100,7 @@ fun ProfileSetupScreen(viewModel: ProfileViewModel, onDone: () -> Unit) {
                         modifier = Modifier
                             .aspectRatio(0.85f)
                             .clip(RoundedCornerShape(18.dp))
-                            .background(if (selected) CrystalCyan.copy(alpha = 0.25f) else SurfaceCard.copy(alpha = 0.08f))
+                            .background(if (selected) CrystalCyan.copy(alpha = 0.25f) else SurfaceCard.copy(alpha = 0.15f))
                             .border(
                                 width = if (selected) 2.dp else 0.dp,
                                 color = CrystalCyan,

@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.reasoncards
+﻿package com.educalab.filosofar.ui.screens.reasoncards
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -44,7 +47,7 @@ fun ReasonCardsScreen(viewModel: ReasonCardsViewModel, onDone: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onDone) { Text("←", color = TextOnDark, style = MaterialTheme.typography.headlineMedium) }
                 Column {
@@ -107,7 +110,7 @@ private fun ReasonCardChip(card: ReasonCard, selected: Boolean, onClick: () -> U
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(if (selected) CrystalCyan.copy(alpha = 0.22f) else SurfaceCard.copy(alpha = 0.08f))
+            .background(if (selected) CrystalCyan.copy(alpha = 0.22f) else SurfaceCard.copy(alpha = 0.15f))
             .border(width = if (selected) 2.dp else 0.dp, color = CrystalCyan, shape = RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
             .padding(12.dp)

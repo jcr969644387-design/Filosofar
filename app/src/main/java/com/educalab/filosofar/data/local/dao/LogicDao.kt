@@ -36,6 +36,9 @@ interface LogicDao {
     @Query("SELECT * FROM logic_attempt ORDER BY attemptedAtEpochMs DESC")
     fun observeAllAttempts(): Flow<List<LogicAttemptEntity>>
 
+    @Query("SELECT * FROM logic_attempt WHERE challengeId = :challengeId AND wasCorrect = 1 ORDER BY attemptedAtEpochMs DESC LIMIT 1")
+    suspend fun latestCorrectAttemptFor(challengeId: String): LogicAttemptEntity?
+
     @Query(
         """
         SELECT COUNT(DISTINCT challengeId) FROM logic_attempt la

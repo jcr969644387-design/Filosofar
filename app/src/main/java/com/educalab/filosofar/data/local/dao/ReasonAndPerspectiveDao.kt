@@ -44,6 +44,9 @@ interface PerspectiveDao {
     @Query("SELECT * FROM perspective_attempt ORDER BY attemptedAtEpochMs DESC")
     fun observeAllAttempts(): Flow<List<PerspectiveAttemptEntity>>
 
+    @Query("SELECT * FROM perspective_attempt WHERE exerciseId = :exerciseId ORDER BY attemptedAtEpochMs DESC LIMIT 1")
+    suspend fun latestAttemptFor(exerciseId: String): PerspectiveAttemptEntity?
+
     @Query(
         """
         SELECT COUNT(DISTINCT exerciseId) FROM perspective_attempt pa

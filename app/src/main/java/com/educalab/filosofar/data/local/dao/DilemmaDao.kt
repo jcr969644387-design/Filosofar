@@ -36,6 +36,9 @@ interface DilemmaDao {
     @Query("SELECT * FROM dilemma_attempt ORDER BY attemptedAtEpochMs DESC")
     fun observeAllAttempts(): Flow<List<DilemmaAttemptEntity>>
 
+    @Query("SELECT * FROM dilemma_attempt WHERE dilemmaId = :dilemmaId ORDER BY attemptedAtEpochMs DESC LIMIT 1")
+    suspend fun latestAttemptFor(dilemmaId: String): DilemmaAttemptEntity?
+
     @Query("SELECT COUNT(DISTINCT dilemmaId) FROM dilemma_attempt da JOIN dilemma d ON d.id = da.dilemmaId WHERE d.islandId = :islandId")
     suspend fun countCompletedInIsland(islandId: String): Int
 

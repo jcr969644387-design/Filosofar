@@ -33,7 +33,18 @@ class DilemmaDetailViewModel(
 
     init {
         viewModelScope.launch {
-            _uiState.value = DilemmaDetailUiState(dilemma = repository.getFull(dilemmaId))
+            val dilemma = repository.getFull(dilemmaId)
+            val prior = repository.latestAttempt(dilemmaId)
+            _uiState.value = if (prior != null) {
+                DilemmaDetailUiState(
+                    dilemma = dilemma,
+                    selectedOptionId = prior.chosenOptionId,
+                    revealedPerspective = true,
+                    confirmed = true
+                )
+            } else {
+                DilemmaDetailUiState(dilemma = dilemma)
+            }
         }
     }
 

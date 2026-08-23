@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.educalab.filosofar.data.local.entity.DailyQuestionEntity
+import com.educalab.filosofar.data.local.entity.DailyQuestionUnlockEntity
 import com.educalab.filosofar.data.local.entity.QuestionAttemptEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +14,18 @@ interface DailyQuestionDao {
 
     @Query("SELECT * FROM daily_question WHERE islandId = :islandId ORDER BY orderInIsland ASC")
     fun observeByIsland(islandId: String): Flow<List<DailyQuestionEntity>>
+
+    @Query("SELECT * FROM daily_question WHERE islandId = :islandId ORDER BY orderInIsland ASC")
+    suspend fun listByIslandOnce(islandId: String): List<DailyQuestionEntity>
+
+    @Query("SELECT * FROM daily_question_unlock WHERE islandId = :islandId LIMIT 1")
+    suspend fun getUnlockAnchor(islandId: String): DailyQuestionUnlockEntity?
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertUnlockAnchor(entity: DailyQuestionUnlockEntity)
+
+    @Query("SELECT * FROM question_attempt WHERE questionId = :questionId ORDER BY answeredAtEpochMs DESC LIMIT 1")
+    suspend fun latestAttemptFor(questionId: String): QuestionAttemptEntity?
 
     @Query("SELECT * FROM daily_question WHERE id = :id LIMIT 1")
     suspend fun get(id: String): DailyQuestionEntity?

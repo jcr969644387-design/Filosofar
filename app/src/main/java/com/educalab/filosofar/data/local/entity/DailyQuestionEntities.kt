@@ -54,3 +54,25 @@ data class QuestionAttemptEntity(
     val wordCount: Int,
     val answeredAtEpochMs: Long
 )
+
+/**
+ * Ancla del desbloqueo diario: guarda el "día lógico" (con corte a las 6:00
+ * am) en que el pensador abrió por primera vez la Pregunta del día de una
+ * isla. A partir de esa fecha se desbloquea una pregunta nueva cada día,
+ * hasta agotar las 5 preguntas de la isla.
+ */
+@Entity(
+    tableName = "daily_question_unlock",
+    foreignKeys = [
+        ForeignKey(
+            entity = PhilosophyIslandEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["islandId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
+data class DailyQuestionUnlockEntity(
+    @PrimaryKey val islandId: String,
+    val startDayKey: Long
+)

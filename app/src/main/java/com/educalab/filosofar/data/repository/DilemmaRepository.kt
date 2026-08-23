@@ -14,6 +14,8 @@ class DilemmaRepository(
     fun observeByIsland(islandId: String): Flow<List<Dilemma>> =
         dao.observeByIsland(islandId).map { list -> list.map { entity -> entity.toDomain(emptyList()) } }
 
+    suspend fun latestAttempt(dilemmaId: String): DilemmaAttemptEntity? = dao.latestAttemptFor(dilemmaId)
+
     suspend fun getFull(dilemmaId: String): Dilemma? {
         val entity = dao.get(dilemmaId) ?: return null
         val options = dao.optionsFor(dilemmaId).map {

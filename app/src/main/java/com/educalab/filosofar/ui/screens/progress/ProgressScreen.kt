@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.progress
+﻿package com.educalab.filosofar.ui.screens.progress
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -44,7 +47,7 @@ fun ProgressScreen(viewModel: ProgressViewModel, onBack: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Text("←", color = TextOnDark, style = MaterialTheme.typography.headlineMedium) }
                 Text("Progreso y Colección", color = TextOnDark, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -63,7 +66,7 @@ fun ProgressScreen(viewModel: ProgressViewModel, onBack: () -> Unit) {
                 items(state.islands) { (island, progress) ->
                     val islandColor = try { androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor(island.themeColorHex)) } catch (e: Exception) { androidx.compose.ui.graphics.Color.Gray }
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp).clip(RoundedCornerShape(16.dp)).background(SurfaceCard.copy(alpha = 0.08f)).padding(14.dp)
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp).clip(RoundedCornerShape(16.dp)).background(SurfaceCard.copy(alpha = 0.15f)).padding(14.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IslandThemeIcon(island.iconKey, islandColor, Modifier.size(28.dp))

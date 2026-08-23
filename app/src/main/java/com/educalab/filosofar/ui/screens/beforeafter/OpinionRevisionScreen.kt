@@ -1,14 +1,17 @@
-package com.educalab.filosofar.ui.screens.beforeafter
+﻿package com.educalab.filosofar.ui.screens.beforeafter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,7 +43,7 @@ fun OpinionRevisionScreen(viewModel: OpinionRevisionViewModel, onBack: () -> Uni
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Text("←", color = TextOnDark, style = MaterialTheme.typography.headlineMedium) }
                 Text("Antes pensaba / Ahora pienso", color = TextOnDark, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -75,7 +78,7 @@ fun OpinionRevisionScreen(viewModel: OpinionRevisionViewModel, onBack: () -> Uni
                     Text(
                         state.previousAnswer.ifBlank { "(sin respuesta previa)" },
                         color = TextOnDark,
-                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SurfaceCard.copy(alpha = 0.08f)).padding(12.dp)
+                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SurfaceCard.copy(alpha = 0.15f)).padding(12.dp)
                     )
                     Spacer(Modifier.height(14.dp))
                     Text("¿Qué piensas ahora?", color = TextOnDarkMuted, fontWeight = FontWeight.Bold)

@@ -15,6 +15,8 @@ class LogicRepository(
     fun observeByIsland(islandId: String): Flow<List<LogicChallenge>> =
         dao.observeByIsland(islandId).map { list -> list.map { it.toDomain(emptyList()) } }
 
+    suspend fun wasSolved(challengeId: String): Boolean = dao.latestCorrectAttemptFor(challengeId) != null
+
     suspend fun getFull(challengeId: String): LogicChallenge? {
         val entity = dao.get(challengeId) ?: return null
         val items = dao.itemsFor(challengeId).map {

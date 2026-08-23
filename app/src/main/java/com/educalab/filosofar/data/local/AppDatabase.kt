@@ -15,6 +15,7 @@ import com.educalab.filosofar.data.local.dao.SelfDebateDao
 import com.educalab.filosofar.data.local.dao.UserProfileDao
 import com.educalab.filosofar.data.local.entity.BadgeEntity
 import com.educalab.filosofar.data.local.entity.DailyQuestionEntity
+import com.educalab.filosofar.data.local.entity.DailyQuestionUnlockEntity
 import com.educalab.filosofar.data.local.entity.DebateArgumentEntity
 import com.educalab.filosofar.data.local.entity.DilemmaAttemptEntity
 import com.educalab.filosofar.data.local.entity.DilemmaEntity
@@ -48,6 +49,7 @@ import com.educalab.filosofar.data.local.entity.VoiceReflectionMetadataEntity
         PhilosophyIslandEntity::class,
         DailyQuestionEntity::class,
         QuestionAttemptEntity::class,
+        DailyQuestionUnlockEntity::class,
         DilemmaEntity::class,
         DilemmaOptionEntity::class,
         DilemmaAttemptEntity::class,
@@ -67,7 +69,7 @@ import com.educalab.filosofar.data.local.entity.VoiceReflectionMetadataEntity
         BadgeEntity::class,
         UserBadgeEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -95,7 +97,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     DATABASE_NAME
-                ).build().also { instance = it }
+                ).fallbackToDestructiveMigration().build().also { instance = it }
             }
         }
     }

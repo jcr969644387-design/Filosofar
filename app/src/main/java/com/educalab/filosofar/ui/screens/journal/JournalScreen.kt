@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.journal
+﻿package com.educalab.filosofar.ui.screens.journal
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,7 +62,7 @@ fun JournalScreen(viewModel: JournalViewModel, onBack: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Text("←", color = TextOnDark, style = MaterialTheme.typography.headlineMedium) }
                 Text("Cuaderno de Ideas", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
@@ -102,7 +105,7 @@ fun JournalScreen(viewModel: JournalViewModel, onBack: () -> Unit) {
                         }
                     } else {
                         Row(
-                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(SurfaceCard.copy(alpha = 0.1f)).padding(10.dp),
+                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(SurfaceCard.copy(alpha = 0.16f)).padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("🎙 Reflexión grabada (${state.lastRecordedDurationMs / 1000}s)", color = TextOnDark, modifier = Modifier.weight(1f))
@@ -142,7 +145,7 @@ fun JournalScreen(viewModel: JournalViewModel, onBack: () -> Unit) {
                 LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(state.entries) { entry ->
                         Column(
-                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(SurfaceCard.copy(alpha = 0.10f)).padding(14.dp)
+                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(SurfaceCard.copy(alpha = 0.16f)).padding(14.dp)
                         ) {
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text(entry.title, color = TextOnDark, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))

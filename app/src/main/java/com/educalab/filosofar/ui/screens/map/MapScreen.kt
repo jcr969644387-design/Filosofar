@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.map
+﻿package com.educalab.filosofar.ui.screens.map
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -66,7 +69,7 @@ fun MapScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             MapTopBar(state, onOpenProgress, onOpenSettings)
 
             androidx.compose.foundation.layout.BoxWithConstraints(
@@ -199,7 +202,7 @@ private fun BottomQuickBar(onOpenJournal: () -> Unit, onOpenProgress: () -> Unit
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SurfaceCard.copy(alpha = 0.10f))
+            .background(SurfaceCard.copy(alpha = 0.16f))
             .padding(horizontal = 20.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {

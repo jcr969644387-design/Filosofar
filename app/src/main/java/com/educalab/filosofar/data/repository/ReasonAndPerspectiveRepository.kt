@@ -26,6 +26,8 @@ class PerspectiveRepository(
 
     suspend fun getFull(id: String): PerspectiveExercise? = dao.get(id)?.toDomain()
 
+    suspend fun latestAttempt(exerciseId: String): PerspectiveAttemptEntity? = dao.latestAttemptFor(exerciseId)
+
     suspend fun recordAttempt(exerciseId: String, choseRole: String, revealedOtherRole: Boolean) {
         dao.insertAttempt(
             PerspectiveAttemptEntity(

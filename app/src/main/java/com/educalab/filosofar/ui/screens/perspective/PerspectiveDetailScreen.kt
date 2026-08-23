@@ -1,4 +1,4 @@
-package com.educalab.filosofar.ui.screens.perspective
+﻿package com.educalab.filosofar.ui.screens.perspective
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.educalab.filosofar.ui.components.OceanSkyBackground
 import com.educalab.filosofar.ui.theme.CrystalCyan
+import com.educalab.filosofar.ui.theme.SuccessGreen
 import com.educalab.filosofar.ui.theme.SurfaceCard
 import com.educalab.filosofar.ui.theme.TextOnDark
 import com.educalab.filosofar.ui.theme.TextOnDarkMuted
@@ -44,21 +48,37 @@ fun PerspectiveDetailScreen(viewModel: PerspectiveDetailViewModel, onBack: () ->
 
     Box(modifier = Modifier.fillMaxSize()) {
         OceanSkyBackground(modifier = Modifier.fillMaxSize())
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
             Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Text("←", color = TextOnDark, style = MaterialTheme.typography.headlineMedium) }
                 Text("Otro punto de vista", style = MaterialTheme.typography.titleLarge, color = TextOnDark, fontWeight = FontWeight.Bold)
             }
 
             Column(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+                if (state.confirmed) {
+                    Text(
+                        "✓ Completado",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = TextOnLight,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(SuccessGreen)
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
                 Text(exercise.situation, style = MaterialTheme.typography.headlineMedium, color = TextOnDark, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Elige desde qué papel quieres empezar a mirar esta escena:", color = TextOnDarkMuted)
+                Text(
+                    if (state.chosenRole == null) "Elige desde qué papel quieres empezar a mirar esta escena:" else "Ya elegiste tu papel. Usa el botón de abajo para ver la otra mirada.",
+                    color = TextOnDarkMuted
+                )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                RoleCard("A", exercise.roleAText, state.chosenRole == "A") { viewModel.chooseRole("A") }
+                RoleCard("A", exercise.roleAText, state.chosenRole == "A", enabled = state.chosenRole == null) { viewModel.chooseRole("A") }
                 Spacer(modifier = Modifier.height(10.dp))
-                RoleCard("B", exercise.roleBText, state.chosenRole == "B") { viewModel.chooseRole("B") }
+                RoleCard("B", exercise.roleBText, state.chosenRole == "B", enabled = state.chosenRole == null) { viewModel.chooseRole("B") }
 
                 AnimatedVisibility(visible = state.chosenRole != null, enter = fadeIn(), exit = fadeOut()) {
                     Column {
@@ -67,7 +87,7 @@ fun PerspectiveDetailScreen(viewModel: PerspectiveDetailViewModel, onBack: () ->
                         Text(
                             viewpoint,
                             color = TextOnDark,
-                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SurfaceCard.copy(alpha = 0.08f)).padding(12.dp)
+                            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(SurfaceCard.copy(alpha = 0.15f)).padding(12.dp)
                         )
                         Spacer(modifier = Modifier.height(14.dp))
                         if (!state.revealedOther) {
@@ -100,14 +120,14 @@ fun PerspectiveDetailScreen(viewModel: PerspectiveDetailViewModel, onBack: () ->
 }
 
 @Composable
-private fun RoleCard(role: String, text: String, selected: Boolean, onClick: () -> Unit) {
+private fun RoleCard(role: String, text: String, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(if (selected) CrystalCyan.copy(alpha = 0.18f) else SurfaceCard.copy(alpha = 0.08f))
+            .background(if (selected) CrystalCyan.copy(alpha = 0.18f) else SurfaceCard.copy(alpha = 0.15f))
             .border(width = if (selected) 2.dp else 0.dp, color = CrystalCyan, shape = RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

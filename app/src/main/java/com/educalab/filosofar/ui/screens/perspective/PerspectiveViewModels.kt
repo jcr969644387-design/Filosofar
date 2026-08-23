@@ -32,7 +32,18 @@ class PerspectiveDetailViewModel(
 
     init {
         viewModelScope.launch {
-            _uiState.value = PerspectiveDetailUiState(exercise = repository.getFull(exerciseId))
+            val exercise = repository.getFull(exerciseId)
+            val prior = repository.latestAttempt(exerciseId)
+            _uiState.value = if (prior != null) {
+                PerspectiveDetailUiState(
+                    exercise = exercise,
+                    chosenRole = prior.choseRole,
+                    revealedOther = true,
+                    confirmed = true
+                )
+            } else {
+                PerspectiveDetailUiState(exercise = exercise)
+            }
         }
     }
 
